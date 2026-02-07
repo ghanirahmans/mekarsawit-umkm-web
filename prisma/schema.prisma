@@ -1,0 +1,77 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  super_admin
+  umkm
+}
+
+enum StockStatus {
+  ready
+  preorder
+}
+
+model VillageCode {
+  id         String   @id @default(uuid())
+  code       String   @unique
+  validFrom  DateTime
+  validTo    DateTime?
+  isActive   Boolean  @default(true)
+  createdBy  String?
+  createdAt  DateTime @default(now())
+}
+
+model User {
+  id          String     @id @default(uuid())
+  phone       String     @unique
+  role        Role
+  villageCode String
+  businesses  Business[]
+  createdAt   DateTime   @default(now())
+}
+
+model Business {
+  id            String    @id @default(uuid())
+  ownerId       String    @unique
+  owner         User      @relation(fields: [ownerId], references: [id])
+  name          String
+  slug          String    @unique
+  category      String
+  address       String?
+  whatsapp      String
+  description   String?
+  verified      Boolean   @default(false)
+  active        Boolean   @default(true)
+  coverImageUrl String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  products      Product[]
+
+  @@index([verified, active])
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  businessId  String
+  business    Business    @relation(fields: [businessId], references: [id])
+  name        String
+  slug        String
+  price       Int
+  unit        String
+  stockStatus StockStatus @default(ready)
+  imageUrl    String?
+  description String?
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([businessId, slug])
+  @@index([active])
+}
