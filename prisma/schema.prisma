@@ -10,7 +10,7 @@ datasource db {
 
 enum Role {
   super_admin
-  umkm
+  admin_umkm
 }
 
 enum StockStatus {
@@ -30,7 +30,9 @@ model VillageCode {
 
 model User {
   id          String     @id @default(uuid())
-  phone       String     @unique
+  email       String?    @unique
+  passwordHash String?
+  phone       String?    @unique
   role        Role
   villageCode String
   businesses  Business[]
