@@ -26,21 +26,41 @@ export default function AdminLoginPage() {
       setMessage(data?.error ?? "Login gagal");
       return;
     }
-    window.location.href = "/admin/pending";
+    window.location.href = "/admin/dashboard";
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#e8f5e9] via-white to-[#fff7ec] text-slate-900">
       <div className="mx-auto grid max-w-5xl gap-6 px-6 py-12 lg:grid-cols-[1.1fr,0.9fr]">
         <div className="relative overflow-hidden rounded-3xl border border-emerald-100 bg-white/80 p-8 shadow-sm backdrop-blur">
-          <div className="absolute -left-14 -top-14 h-40 w-40 rounded-full bg-emerald-200/50 blur-3xl" aria-hidden />
-          <div className="absolute -right-10 bottom-0 h-32 w-32 rounded-full bg-amber-200/50 blur-3xl" aria-hidden />
+          <div
+            className="absolute -left-14 -top-14 h-40 w-40 rounded-full bg-emerald-200/50 blur-3xl"
+            aria-hidden
+          />
+          <div
+            className="absolute -right-10 bottom-0 h-32 w-32 rounded-full bg-amber-200/50 blur-3xl"
+            aria-hidden
+          />
 
           <div className="relative flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-emerald-700">Admin Desa</p>
-              <h1 className="text-3xl font-bold text-slate-900">Masuk Panel Admin</h1>
-              <p className="text-slate-600">Gunakan email admin, password, dan kode desa aktif.</p>
+              <div className="mb-4 flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-white p-1.5 shadow-lg shadow-emerald-500/10 border border-emerald-100/50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo.png"
+                  alt="Logo Desa Mekar Sawit"
+                  className="h-full w-full object-contain"
+                />
+              </div>
+              <p className="text-sm font-semibold text-emerald-700">
+                Admin Desa
+              </p>
+              <h1 className="text-3xl font-bold text-slate-900">
+                Masuk Panel Admin
+              </h1>
+              <p className="text-slate-600">
+                Gunakan email admin, password, dan kode desa aktif.
+              </p>
             </div>
             <Link
               href="/"
@@ -66,7 +86,11 @@ export default function AdminLoginPage() {
               onChange={setPassword}
               placeholder="••••••••"
               required
-              rightIcon={<i className={`bi ${showPwd ? "bi-eye-slash" : "bi-eye"} text-slate-600 text-lg`} />}
+              rightIcon={
+                <i
+                  className={`bi ${showPwd ? "bi-eye-slash" : "bi-eye"} text-slate-600 text-lg`}
+                />
+              }
               onRightClick={() => setShowPwd((s) => !s)}
             />
             <Field
@@ -93,29 +117,36 @@ export default function AdminLoginPage() {
               </a>
             </div>
 
-            {status === "error" && <p className="text-sm font-semibold text-red-600">❌ {message}</p>}
+            {status === "error" && (
+              <p className="text-sm font-semibold text-red-600">❌ {message}</p>
+            )}
           </form>
         </div>
 
         <aside className="rounded-3xl border border-emerald-100 bg-white/70 p-6 shadow-sm backdrop-blur">
-          <p className="text-sm font-semibold text-emerald-800">Tips keamanan</p>
+          <p className="text-sm font-semibold text-emerald-800">
+            Tips keamanan
+          </p>
           <ul className="mt-3 space-y-2 text-sm text-emerald-900">
             <li>• Jangan bagikan password admin.</li>
             <li>• Ganti kode desa setiap bulan.</li>
             <li>• Logout setelah verifikasi.</li>
           </ul>
           <div className="mt-4 rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-            Dev: email <code className="bg-white px-1">admin@mekarsawit.local</code> · pass <code className="bg-white px-1">admin123</code> · kode <code className="bg-white px-1">MSAWITDEV</code>
+            Dev: email{" "}
+            <code className="bg-white px-1">admin@mekarsawit.local</code> · pass{" "}
+            <code className="bg-white px-1">admin123</code> · kode{" "}
+            <code className="bg-white px-1">MSAWITDEV</code>
           </div>
           <div className="mt-4 rounded-2xl bg-white px-4 py-3 text-sm text-slate-800 shadow-inner">
-            UMKM login tetap via halaman &quot;Daftar UMKM&quot; (OTP/HP nanti). Panel ini khusus super admin desa.
+            UMKM login tetap via halaman &quot;Daftar UMKM&quot; (OTP/HP nanti).
+            Panel ini khusus super admin desa.
           </div>
         </aside>
       </div>
     </div>
   );
 }
-
 
 function Field({
   label,

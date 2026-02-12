@@ -1,50 +1,76 @@
-import { businesses, products } from "@/data/catalog";
+import { prisma } from "@/lib/prisma";
 import { buildWaLink } from "../wa";
 
-type LandingProduct = {
+export type LandingProduct = {
   id: string;
   name: string;
   price: number;
   unit: string;
   stockStatus: string;
-  imageUrl?: string;
-  description?: string;
+  imageUrl?: string | null;
+  description?: string | null;
   businessName: string;
   businessCategory: string;
   whatsapp: string;
   waLink: string;
 };
 
-export function getLandingCatalog(): LandingProduct[] {
-  return products
-    .filter((p) => p.active)
-    .map((product) => {
-      const business = businesses.find((b) => b.id === product.businessId);
-      const whatsapp = business?.whatsapp ?? "";
-      return {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        unit: product.unit,
-        stockStatus: product.stockStatus,
-        imageUrl: product.imageUrl,
-        description: product.description,
-        businessName: business?.name ?? "UMKM Mekar Sawit",
-        businessCategory: business?.category ?? "",
-        whatsapp,
-        waLink: buildWaLink({
-          phone: whatsapp,
-          productName: product.name,
-          businessName: business?.name,
-          quantity: 1,
-        }),
-      };
-    });
+export async function getLandingCatalog(): Promise<LandingProduct[]> {
+  const products = await prisma.product.findMany({
+    where: {
+      active: true,
+      verified: true,
+      business: {
+        active: true,
+        verified: true,
+      },
+    },
+    include: {
+      business: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return products.map((product) => {
+    const business = product.business;
+    const whatsapp = business.whatsapp;
+
+    return {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      unit: product.unit,
+      stockStatus: product.stockStatus,
+      imageUrl: product.imageUrl,
+      description: product.description,
+      businessName: business.name,
+      businessCategory: business.category,
+      whatsapp,
+      waLink: buildWaLink({
+        phone: whatsapp,
+        productName: product.name,
+        businessName: business.name,
+        quantity: 1,
+      }),
+    };
+  });
 }
 
-export function getHeroStats() {
-  const activeBusinesses = businesses.filter((b) => b.active && b.verified).length;
-  const activeProducts = products.filter((p) => p.active).length;
-  const categories = new Set(businesses.map((b) => b.category)).size;
+export async function getHeroStats() {
+  const [activeBusinesses, activeProducts, categories] = await Promise.all([
+    prisma.business.count({ where: { active: true, verified: true } }),
+    prisma.product.count({
+      where: { active: true, business: { active: true, verified: true } },
+    }),
+    prisma.business
+      .groupBy({
+        by: ["category"],
+        where: { active: true, verified: true },
+      })
+      .then((groups) => groups.length),
+  ]);
+
   return { activeBusinesses, activeProducts, categories };
-}
+}

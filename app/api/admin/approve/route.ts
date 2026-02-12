@@ -3,7 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 
 async function getAdmin() {
-  const session = cookies().get("admin_session")?.value;
+  const cookieStore = await cookies();
+  const session = cookieStore.get("admin_session")?.value;
   if (!session) return null;
   const user = await prisma.user.findUnique({ where: { id: session } });
   if (user?.role !== "super_admin") return null;

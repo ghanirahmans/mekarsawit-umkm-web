@@ -30,6 +30,7 @@ model VillageCode {
 
 model User {
   id          String     @id @default(uuid())
+  name        String?
   email       String?    @unique
   passwordHash String?
   phone       String?    @unique
@@ -70,10 +71,11 @@ model Product {
   stockStatus StockStatus @default(ready)
   imageUrl    String?
   description String?
+  verified    Boolean     @default(false)
   active      Boolean     @default(true)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   @@unique([businessId, slug])
-  @@index([active])
-}
+  @@index([active, verified])
+}

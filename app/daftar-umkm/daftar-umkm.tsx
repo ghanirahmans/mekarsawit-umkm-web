@@ -2,26 +2,37 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const steps = [
-  { title: "Ambil kode desa", desc: "Datang ke kantor desa/BUMDes, dapatkan kode akses aktif (rotasi bulanan)." },
-  { title: "Isi formulir", desc: "Lengkapi data usaha & nomor HP, kirim permohonan." },
-  { title: "Menunggu verifikasi", desc: "Admin desa cek & approve. Setelah itu produk bisa ditambah." },
+  {
+    title: "Ambil kode desa",
+    desc: "Dapatkan kode akses dari kantor desa/BUMDes.",
+    icon: "bi-upc-scan",
+  },
+  {
+    title: "Buat Akun",
+    desc: "Daftar menggunakan Nomor HP dan set Password.",
+    icon: "bi-person-plus",
+  },
+  {
+    title: "Mulai Usaha",
+    desc: "Login dan daftarkan usaha Anda di dashboard.",
+    icon: "bi-shop",
+  },
 ];
 
 type State = "idle" | "loading" | "success" | "error";
 
 export default function DaftarUmkmScreen() {
+  const router = useRouter();
   const [status, setStatus] = useState<State>("idle");
   const [message, setMessage] = useState<string>("");
   const [form, setForm] = useState({
     villageCode: "",
+    name: "",
     phone: "",
-    businessName: "",
-    category: "",
-    address: "",
-    whatsapp: "",
-    description: "",
+    password: "",
   });
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -29,16 +40,21 @@ export default function DaftarUmkmScreen() {
     setStatus("loading");
     setMessage("");
     try {
-      const res = await fetch("/api/register-umkm", {
+      const res = await fetch("/api/umkm/register-account", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? "Gagal daftar");
+
       setStatus("success");
-      setMessage("Berhasil mendaftar. Admin desa akan memverifikasi.");
-      setForm({ villageCode: "", phone: "", businessName: "", category: "", address: "", whatsapp: "", description: "" });
+      setMessage("Akun berhasil dibuat! Mengalihkan ke halaman login...");
+
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        router.push("/umkm/login");
+      }, 2000);
     } catch (err) {
       setStatus("error");
       const msg = err instanceof Error ? err.message : "Terjadi kesalahan.";
@@ -47,101 +63,226 @@ export default function DaftarUmkmScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f4f7f2] via-white to-[#fefbf5] text-slate-900">
-      <div className="mx-auto flex max-w-5xl flex-col gap-4 px-6 pt-10 pb-8 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-emerald-700">Pendaftaran UMKM</p>
-          <h1 className="text-3xl font-bold text-slate-900">Gabung katalog desa Mekar Sawit</h1>
-          <p className="text-slate-600">Katalog publik, pesanan tetap via WhatsApp langsung ke pemilik usaha.</p>
-        </div>
-        <Link
-          href="/"
-          className="rounded-full border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50"
-        >
-          ← Beranda
-        </Link>
-      </div>
-
-      <div className="mx-auto max-w-5xl px-6 pb-16">
-        <div className="grid gap-4 lg:grid-cols-[1.1fr,0.9fr]">
-          <form onSubmit={onSubmit} className="space-y-4 rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">Form daftar UMKM</h2>
-              <p className="text-sm text-slate-600">Verifikasi nomor nanti; sekarang cukup kirim data dasar.</p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Kode desa" required value={form.villageCode} onChange={(v) => setForm({ ...form, villageCode: v })} placeholder="MSAWITDEV" />
-              <Field label="Nomor HP (pemilik)" required value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} placeholder="62812xxxx" />
-              <Field label="Nama usaha" required value={form.businessName} onChange={(v) => setForm({ ...form, businessName: v })} placeholder="Gula Semut Pak Budi" />
-              <Field label="Kategori" required value={form.category} onChange={(v) => setForm({ ...form, category: v })} placeholder="Makanan / Pertanian / Kerajinan" />
-              <Field label="Alamat / titik pickup" required value={form.address} onChange={(v) => setForm({ ...form, address: v })} placeholder="RT/RW, patokan" />
-              <Field label="Nomor WhatsApp untuk pesanan" required value={form.whatsapp} onChange={(v) => setForm({ ...form, whatsapp: v })} placeholder="62812xxxx" />
-            </div>
-            <div>
-              <label className="text-sm font-semibold text-slate-800">
-                Deskripsi singkat
-                <textarea
-                  className="mt-1 w-full rounded-2xl border border-emerald-100 bg-white px-3 py-2 text-sm text-slate-800 outline-none ring-emerald-100 focus:ring-2"
-                  rows={3}
-                  value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder="Produk utama, keunggulan, jadwal stok."
+    <div className="min-h-screen font-sans text-slate-900 selection:bg-emerald-500/30">
+      {/* Navbar */}
+      <nav className="fixed top-0 z-50 w-full border-b border-white/50 bg-white/90 backdrop-blur-md transition-all shadow-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-white p-1 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo.png"
+                  alt="Logo Desa Mekar Sawit"
+                  className="h-full w-full object-contain"
                 />
-              </label>
-            </div>
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="inline-flex items-center justify-center rounded-full bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-emerald-800 disabled:opacity-70"
-            >
-              {status === "loading" ? "Mengirim..." : "Kirim pendaftaran"}
-            </button>
-            {status === "success" && <p className="text-sm font-semibold text-emerald-700">✅ {message || "Berhasil mendaftar."}</p>}
-            {status === "error" && <p className="text-sm font-semibold text-red-600">❌ {message}</p>}
-          </form>
-
-          <div className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">Prasyarat singkat</h2>
-              <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                <li>• Domisili UMKM di Desa Mekar Sawit.</li>
-                <li>• Nomor WA aktif khusus pesanan.</li>
-                <li>• Foto produk jelas (max 1–2 MB, disarankan WebP).</li>
-                <li>• Bersedia verifikasi alamat/pickup oleh admin desa.</li>
-              </ul>
-              <div className="mt-4 rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-                Kode dev: <code className="rounded bg-white px-2 py-1">MSAWITDEV</code> · Prod: kode rotasi bulanan (hubungi admin desa).
               </div>
-            </div>
+              <div>
+                <h1 className="text-sm font-bold tracking-tight text-slate-900 group-hover:text-emerald-700 transition-colors">
+                  Desa Mekar Sawit
+                </h1>
+                <p className="text-[10px] uppercase tracking-wider text-slate-600 font-semibold">
+                  Langkat, Sumatera Utara
+                </p>
+              </div>
+            </Link>
+          </div>
+          <Link
+            href="/"
+            className="rounded-full border border-emerald-200 px-4 py-2 text-sm font-bold text-emerald-800 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50 active:scale-95"
+          >
+            ← Kembali ke Beranda
+          </Link>
+        </div>
+      </nav>
 
-            <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5">
-              <h2 className="text-lg font-semibold text-amber-900">Kontak admin</h2>
-              <p className="mt-2 text-amber-900/80">Chat admin desa untuk minta kode aktif atau bantuan teknis.</p>
+      <main className="relative pt-24 pb-20 bg-slate-50/50">
+        <div className="mx-auto max-w-5xl px-6">
+          <header className="mb-10 text-center">
+            <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+              Buat Akun UMKM
+            </h1>
+            <p className="mt-3 text-lg text-slate-600">
+              Mulai langkah digitalisasi usaha Anda dengan membuat akun.
+            </p>
+          </header>
+
+          <div className="grid gap-8 lg:grid-cols-[1.2fr,0.8fr]">
+            <form
+              onSubmit={onSubmit}
+              className="rounded-3xl border border-white bg-white p-8 shadow-sm"
+            >
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-slate-900">Data Akun</h2>
+                <p className="text-sm text-slate-500">
+                  Isi data diri Anda untuk membuat akun.
+                </p>
+              </div>
+
+              {status === "success" && (
+                <div className="mb-6 rounded-2xl bg-emerald-50 p-4 text-emerald-800 ring-1 ring-emerald-200">
+                  <div className="flex items-center gap-3">
+                    <i className="bi bi-check-circle-fill text-xl"></i>
+                    <p className="font-semibold">{message}</p>
+                  </div>
+                </div>
+              )}
+
+              {status === "error" && (
+                <div className="mb-6 rounded-2xl bg-red-50 p-4 text-red-800 ring-1 ring-red-200">
+                  <div className="flex items-center gap-3">
+                    <i className="bi bi-exclamation-triangle-fill text-xl"></i>
+                    <p className="font-semibold">{message}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid gap-5">
+                <div>
+                  <Field
+                    label="Kode Desa"
+                    required
+                    value={form.villageCode}
+                    onChange={(v) => setForm({ ...form, villageCode: v })}
+                    placeholder="Contoh: MSAWITDEV"
+                    icon="bi-key"
+                  />
+                  <p className="mt-1 text-[10px] text-slate-500">
+                    Dapatkan kode di kantor desa/BUMDes.
+                  </p>
+                </div>
+
+                <Field
+                  label="Nama Lengkap"
+                  required
+                  value={form.name}
+                  onChange={(v) => setForm({ ...form, name: v })}
+                  placeholder="Nama sesuai KTP"
+                  icon="bi-person"
+                />
+
+                <Field
+                  label="Nomor HP Pemilik"
+                  required
+                  value={form.phone}
+                  onChange={(v) => setForm({ ...form, phone: v })}
+                  placeholder="0812xxxx"
+                  icon="bi-phone"
+                />
+
+                <div>
+                  <Field
+                    label="Password Login"
+                    required
+                    type="password"
+                    value={form.password}
+                    onChange={(v) => setForm({ ...form, password: v })}
+                    placeholder="Buat password aman"
+                    icon="bi-lock"
+                  />
+                  <p className="mt-1 text-[10px] text-slate-500">
+                    Password ini digunakan untuk login ke dashboard.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-slate-100">
+                <button
+                  type="submit"
+                  disabled={status === "loading" || status === "success"}
+                  className="group relative flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-4 text-sm font-bold text-white shadow-xl shadow-slate-900/10 transition-all hover:bg-slate-800 hover:shadow-slate-900/20 disabled:cursor-not-allowed disabled:opacity-70 active:scale-[0.99]"
+                >
+                  {status === "loading" ? (
+                    <>
+                      <span className="block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+                      Memproses...
+                    </>
+                  ) : (
+                    <>
+                      Buat Akun
+                      <i className="bi bi-arrow-right-short text-xl transition-transform group-hover:translate-x-1"></i>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <div className="mt-6 text-center text-sm">
+                <p className="text-slate-500">Sudah punya akun?</p>
+                <Link
+                  href="/umkm/login"
+                  className="font-bold text-emerald-600 hover:underline"
+                >
+                  Login di sini
+                </Link>
+              </div>
+            </form>
+
+            <div className="space-y-6">
+              {/* Alur Steps */}
+              <div className="rounded-3xl bg-white p-6 shadow-sm border border-emerald-50">
+                <h2 className="mb-6 text-lg font-bold text-slate-900">
+                  Langkah Mudah
+                </h2>
+                <div className="relative space-y-8 pl-4 before:absolute before:left-[27px] before:top-4 before:h-[calc(100%-32px)] before:w-0.5 before:bg-slate-100">
+                  {steps.map((step, idx) => (
+                    <div key={idx} className="relative flex gap-4">
+                      <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-50 text-emerald-700 ring-4 ring-white shadow-sm border border-emerald-100">
+                        <i className={`bi ${step.icon} text-lg`}></i>
+                      </div>
+                      <div className="pt-2">
+                        <h3 className="font-bold text-slate-900 leading-none">
+                          {step.title}
+                        </h3>
+                        <p className="mt-2 text-sm text-slate-600 leading-relaxed font-medium">
+                          {step.desc}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl bg-amber-50 p-6 border border-amber-100">
+                <h2 className="text-lg font-bold text-amber-900 flex items-center gap-2">
+                  <i className="bi bi-info-circle-fill text-amber-500"></i>
+                  Info Penting
+                </h2>
+                <div className="mt-4 space-y-3 text-sm font-medium text-amber-900/80">
+                  <p>• Data usaha akan diisi setelah Anda berhasil login.</p>
+                  <div className="mt-4 rounded-xl bg-white/60 p-3 text-xs">
+                    <span className="font-bold">Kode Dev:</span>{" "}
+                    <code className="rounded bg-white px-1.5 py-0.5 ring-1 ring-amber-200">
+                      MSAWITDEV
+                    </code>
+                  </div>
+                </div>
+              </div>
+
               <a
                 href="https://wa.me/6281111111111?text=Halo%20admin%2C%20saya%20mau%20daftar%20UMKM%20Mekar%20Sawit."
-                className="mt-4 inline-flex items-center justify-center rounded-full bg-emerald-700 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-emerald-800"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-emerald-100 bg-white py-3 text-sm font-bold text-emerald-700 transition hover:bg-emerald-50 hover:border-emerald-200"
               >
-                Chat Admin via WhatsApp
+                <i className="bi bi-whatsapp"></i>
+                Bantuan Admin
               </a>
-            </div>
-
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">Alur singkat</h2>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                {steps.map((step, idx) => (
-                  <div key={step.title} className="rounded-2xl border border-emerald-50 bg-emerald-50/40 p-4">
-                    <div className="mb-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">
-                      {idx + 1}
-                    </div>
-                    <p className="font-semibold text-slate-900">{step.title}</p>
-                    <p className="text-sm text-slate-600">{step.desc}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
+
+      <footer className="border-t border-slate-200 bg-white py-12 text-center text-sm text-slate-600 font-medium">
+        <p>
+          © {new Date().getFullYear()} Pemerintah Desa Mekar Sawit. Dilindungi
+          Undang-Undang.
+        </p>
+        <p className="mt-2">
+          Dibuat oleh{" "}
+          <span className="font-bold text-emerald-700">
+            Tim Mekar Sawit Beraksi UMSU
+          </span>{" "}
+          untuk kemajuan desa.
+        </p>
+      </footer>
     </div>
   );
 }
@@ -152,22 +293,30 @@ function Field({
   onChange,
   placeholder,
   required,
+  icon,
+  type = "text",
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   required?: boolean;
+  icon?: string;
+  type?: string;
 }) {
   return (
-    <label className="text-sm font-semibold text-slate-800">
-      {label}
+    <label className="block">
+      <span className="mb-1 block text-sm font-bold text-slate-700">
+        {icon && <i className={`bi ${icon} mr-2 opacity-50`}></i>}
+        {label} {required && <span className="text-red-500">*</span>}
+      </span>
       <input
+        type={type}
         required={required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-2xl border border-emerald-100 bg-white px-3 py-2 text-sm text-slate-800 outline-none ring-emerald-100 focus:ring-2"
+        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none ring-emerald-500/30 transition-shadow focus:border-emerald-500 focus:bg-white focus:ring-4 placeholder:text-slate-400 font-medium"
       />
     </label>
   );

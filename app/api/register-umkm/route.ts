@@ -1,6 +1,7 @@
 ﻿import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 function slugify(text: string) {
   return text
@@ -12,9 +13,9 @@ function slugify(text: string) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { villageCode, phone, businessName, category, address, whatsapp, description } = body || {};
+    const { villageCode, phone, businessName, category, address, whatsapp, description, password } = body || {};
 
-    if (!villageCode || !phone || !businessName || !category || !address || !whatsapp) {
+    if (!villageCode || !phone || !businessName || !category || !address || !whatsapp || !password) {
       return NextResponse.json({ error: "Lengkapi semua field wajib." }, { status: 400 });
     }
 
@@ -26,14 +27,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Kode desa tidak valid atau tidak aktif." }, { status: 400 });
     }
 
+    const passwordHash = await bcrypt.hash(password, 10);
+
     // Buat user jika belum ada
     const user = await prisma.user.upsert({
       where: { phone },
-      update: { villageCode },
+      update: { villageCode, passwordHash },
       create: {
         phone,
         villageCode,
-        role: "umkm",
+        passwordHash,
+        role: "admin_umkm",
       },
     });
 

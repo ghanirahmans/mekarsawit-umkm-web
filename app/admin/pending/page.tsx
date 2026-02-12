@@ -1,4 +1,5 @@
-﻿import { cookies } from "next/headers";
+﻿import AdminNavbar from "../admin-navbar";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
@@ -24,35 +25,32 @@ export default async function PendingPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f4f7f2] via-white to-[#fefbf5] text-slate-900">
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 pt-10 pb-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-emerald-700">Admin Desa</p>
-          <h1 className="text-3xl font-bold text-slate-900">Verifikasi UMKM</h1>
-          <p className="text-slate-600">
-            {pending.length} menunggu verifikasi.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Link
-            href="/"
-            className="rounded-full border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50"
-          >
-            ← Beranda
-          </Link>
-          <Link
-            href="/api/admin/logout"
-            className="rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 transition hover:-translate-y-0.5 hover:border-red-300 hover:bg-red-50"
-          >
-            Logout
-          </Link>
-        </div>
-      </div>
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      <AdminNavbar />
 
-      <div className="mx-auto max-w-6xl px-6 pb-14">
+      <main className="mx-auto max-w-7xl px-6 py-10">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-emerald-700">Admin Desa</p>
+            <h2 className="text-3xl font-bold text-slate-900">
+              Verifikasi UMKM
+            </h2>
+            <p className="mt-2 text-slate-600">
+              Daftar UMKM baru yang menunggu persetujuan untuk mulai berjualan (
+              {pending.length} menunggu verifikasi).
+            </p>
+          </div>
+        </div>
+
         {pending.length === 0 ? (
-          <div className="rounded-3xl border border-emerald-100 bg-white p-6 text-sm text-slate-700 shadow-sm">
-            Belum ada pendaftar.
+          <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-3xl text-slate-400">
+              <i className="bi bi-check-circle"></i>
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">Semua Beres!</h3>
+            <p className="text-slate-500">
+              Tidak ada pendaftar baru yang menunggu verifikasi.
+            </p>
           </div>
         ) : (
           <div className="grid gap-4">
@@ -112,7 +110,7 @@ export default async function PendingPage() {
             ))}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
