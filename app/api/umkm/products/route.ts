@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUmkm } from "@/lib/auth";
-import { writeFile } from "fs/promises";
-import path from "path";
+import { uploadFile } from "@/lib/storage";
 
 function slugify(text: string) {
   return text
@@ -30,7 +29,6 @@ export async function POST(req: Request) {
     const stockStatus = formData.get("stockStatus") as string;
     const description = formData.get("description") as string;
     const imageFile = formData.get("imageFile") as File | null;
-    let imageUrl = formData.get("imageUrl") as string; // Allow fallback to URL if provided
 
     if (!name || !price || !unit) {
       return NextResponse.json(
@@ -39,18 +37,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // Handle File Upload
+    let imageUrl: string | null = null;
     if (imageFile && imageFile.size > 0) {
-      const buffer = Buffer.from(await imageFile.arrayBuffer());
-      const filename = `${Date.now()}-${imageFile.name.replace(/\s/g, "-")}`;
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-
-      // Ensure directory exists (optional, but good practice if not guaranteed)
-      // await mkdir(uploadDir, { recursive: true });
-
-      const filePath = path.join(uploadDir, filename);
-      await writeFile(filePath, buffer);
-      imageUrl = `/uploads/${filename}`;
+      imageUrl = await uploadFile(imageFile, "products");
     }
 
     const slug = `${slugify(name)}-${Date.now().toString(36)}`;

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUmkm } from "@/lib/auth";
+import { uploadFile } from "@/lib/storage";
 
 function slugify(text: string) {
   return text
@@ -8,9 +9,6 @@ function slugify(text: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 }
-
-import { writeFile } from "fs/promises";
-import path from "path";
 
 export async function POST(req: Request) {
   const user = await getSessionUmkm();
@@ -46,14 +44,7 @@ export async function POST(req: Request) {
 
     let coverImageUrl = null;
     if (imageFile && imageFile.size > 0) {
-      const buffer = Buffer.from(await imageFile.arrayBuffer());
-      const filename = `biz-${Date.now()}-${imageFile.name.replace(/\s/g, "-")}`;
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-
-      // Should ensure dir exists, but assuming it does from product upload or manual creation
-      const filePath = path.join(uploadDir, filename);
-      await writeFile(filePath, buffer);
-      coverImageUrl = `/uploads/${filename}`;
+      coverImageUrl = await uploadFile(imageFile, "business");
     }
 
     const slugBase = slugify(businessName);
