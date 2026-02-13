@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import UserList from "./user-list";
+import RefreshButton from "@/app/components/refresh-button";
 
 async function getSessionUser() {
   const cookieStore = await cookies();
@@ -13,11 +14,36 @@ async function getSessionUser() {
   return user;
 }
 
-export default async function UsersPage() {
+import SearchInput from "@/app/components/search-input";
+
+export default async function UsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
   const user = await getSessionUser();
   if (!user) redirect("/admin/login");
 
+  const { q } = await searchParams;
+  const query = q || "";
+
   const users = await prisma.user.findMany({
+    where: {
+      role: {
+        not: "super_admin",
+      },
+      OR: [
+        { phone: { contains: query } },
+        { email: { contains: query } },
+        {
+          businesses: {
+            some: {
+              name: { contains: query },
+            },
+          },
+        },
+      ],
+    },
     include: {
       businesses: true,
     },
@@ -29,17 +55,20 @@ export default async function UsersPage() {
       <AdminNavbar />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-semibold text-emerald-700">Admin Desa</p>
-            <h2 className="text-3xl font-bold text-slate-900">
-              Daftar Pengguna
-            </h2>
-            <p className="mt-2 text-slate-600">Kelola semua akun terdaftar.</p>
+            <h1 className="text-3xl font-bold text-slate-900">
+              Kelola Pengguna
+            </h1>
+            <p className="mt-2 text-slate-600">
+              Daftar semua pengguna terdaftar di sistem.
+            </p>
           </div>
-          <div className="rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-600 shadow-sm border border-slate-100">
-            Total: {users.length} User
-          </div>
+          <RefreshButton />
+        </div>
+
+        <div className="mb-6">
+          <SearchInput placeholder="Cari user (No HP, Email, atau Nama Usaha)..." />
         </div>
 
         <UserList users={users} />

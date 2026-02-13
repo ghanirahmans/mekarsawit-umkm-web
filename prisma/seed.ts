@@ -12,6 +12,8 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 const DEV_VILLAGE_CODE = process.env.DEV_VILLAGE_CODE ?? "MSAWITDEV";
+const SEED_PASSWORD = process.env.SEED_PASSWORD ?? "admin123";
+const SEED_PASSWORD_USER = process.env.SEED_PASSWORD_USER ?? "user123";
 
 const ids = {
   superAdmin: "00000000-0000-0000-0000-000000000001",
@@ -52,8 +54,8 @@ async function main() {
   const users = [
     {
       id: ids.superAdmin,
-      email: "admin@mekarsawit.local",
-      passwordHash: bcrypt.hashSync("admin123", 10),
+      email: "admin@mekarsawit",
+      passwordHash: bcrypt.hashSync(SEED_PASSWORD, 10),
       phone: "+6281111111111",
       role: Role.super_admin,
       villageCode: DEV_VILLAGE_CODE,
@@ -61,6 +63,8 @@ async function main() {
     },
     {
       id: ids.umkm1,
+      name: "Pak Budi Santoso",
+      passwordHash: bcrypt.hashSync(SEED_PASSWORD_USER, 10),
       phone: "+6281234500001",
       role: Role.admin_umkm,
       villageCode: DEV_VILLAGE_CODE,
@@ -68,6 +72,8 @@ async function main() {
     },
     {
       id: ids.umkm2,
+      name: "Ibu Siti Aminah",
+      passwordHash: bcrypt.hashSync(SEED_PASSWORD_USER, 10),
       phone: "+6281234500002",
       role: Role.admin_umkm,
       villageCode: DEV_VILLAGE_CODE,
@@ -83,13 +89,15 @@ async function main() {
       ownerId: ids.umkm1,
       name: "Gula Semut Pak Budi",
       slug: slugify("Gula Semut Pak Budi"),
-      category: "Makanan",
-      address: "RT 02 / RW 01, Mekar Sawit",
-      whatsapp: "6281234500001",
-      description: "Gula semut aren asli, tanpa campuran.",
+      category: "Kuliner (Makanan/Minuman)",
+      address: "Jalan Utama Desa Mekar Sawit, RT 02 / RW 01",
+      whatsapp: "081234500001",
+      description:
+        "Produsen gula semut aren murni berkualitas tinggi. Diproses secara higienis dari nira aren pilihan petani lokal. Cocok untuk pemanis alami kopi, teh, dan kue.",
       verified: true,
       active: true,
-      coverImageUrl: "https://picsum.photos/seed/gula/800",
+      coverImageUrl:
+        "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=800&auto=format&fit=crop",
       createdAt: validFrom,
     },
     {
@@ -97,13 +105,15 @@ async function main() {
       ownerId: ids.umkm2,
       name: "Kopi Bukit Sawit",
       slug: slugify("Kopi Bukit Sawit"),
-      category: "Pertanian",
-      address: "RT 03 / RW 02, Mekar Sawit",
-      whatsapp: "6281234500002",
-      description: "Kopi robusta panen mingguan, sangrai medium.",
+      category: "Pertanian & Perkebunan",
+      address: "Dusun II, Desa Mekar Sawit, Kecamatan Sawit Seberang",
+      whatsapp: "081234500002",
+      description:
+        "Kopi robusta dan liberika asli dari dataran tinggi Bukit Sawit. Dipetik merah dan diproses dengan metode honey process untuk cita rasa terbaik.",
       verified: true,
       active: true,
-      coverImageUrl: "https://picsum.photos/seed/kopi/800",
+      coverImageUrl:
+        "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=800&auto=format&fit=crop",
       createdAt: validFrom,
     },
   ];

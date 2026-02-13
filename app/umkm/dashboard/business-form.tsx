@@ -63,7 +63,7 @@ export default function BusinessForm() {
 
   return (
     <div className="w-full font-sans text-slate-900">
-      <div className="w-full rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
+      <div className="w-full rounded-3xl bg-white p-6 sm:p-8 shadow-sm border border-slate-100">
         <header className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 shadow-sm">
             <span className="text-2xl font-bold">1</span>
@@ -186,7 +186,9 @@ export default function BusinessForm() {
               type="submit"
               disabled={loading}
               className="w-full rounded-xl bg-emerald-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-emerald-500/30 disabled:opacity-70 disabled:hover:translate-y-0"
-            ></button>
+            >
+              {loading ? "Menyimpan..." : "Simpan Profil Usaha"}
+            </button>
           </div>
         </form>
       </div>

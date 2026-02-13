@@ -84,20 +84,28 @@ export default function AddProductPage() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
       <UmkmNavbar />
-      <main className="mx-auto max-w-7xl p-6">
-        <div className="mx-auto max-w-2xl rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
-          <div className="mb-8 flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Tambah Produk Baru</h1>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl rounded-3xl bg-white p-6 sm:p-8 shadow-sm border border-slate-100">
+          <header className="mb-8 text-center sm:text-left">
             <Link
               href="/umkm/dashboard"
-              className="text-sm font-bold text-slate-500 hover:text-slate-700"
+              className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-700 sm:hidden"
             >
-              Batal
+              <i className="bi bi-arrow-left"></i>
+              Kembali
             </Link>
-          </div>
+            <h1 className="text-2xl font-bold text-slate-900">
+              Tambah Produk Baru
+            </h1>
+            <p className="mt-2 text-slate-600">
+              Isi formulir di bawah untuk menambahkan produk ke etalase toko
+              Anda.
+            </p>
+          </header>
 
           {error && (
-            <div className="mb-6 rounded-xl bg-red-50 p-4 text-sm text-red-700 border border-red-100">
+            <div className="mb-6 rounded-2xl bg-red-50 p-4 text-sm text-red-700 border border-red-100 flex items-center gap-3">
+              <i className="bi bi-exclamation-triangle-fill text-lg"></i>
               {error}
             </div>
           )}
@@ -105,7 +113,10 @@ export default function AddProductPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Image Upload - Prominent at top */}
             <div className="flex flex-col items-center justify-center">
-              <div className="relative group h-48 w-full overflow-hidden rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 hover:border-emerald-500 transition-colors cursor-pointer">
+              <label className="mb-2 block w-full text-sm font-bold text-slate-700 sm:w-auto">
+                Foto Produk
+              </label>
+              <div className="relative group aspect-square w-full max-w-[240px] overflow-hidden rounded-3xl border-2 border-dashed border-slate-300 bg-slate-50 hover:border-emerald-500 transition-colors cursor-pointer">
                 <input
                   type="file"
                   accept="image/*"
@@ -120,14 +131,18 @@ export default function AddProductPage() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
-                    <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-500 transition-colors">
+                  <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-3 p-4 text-center">
+                    <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400 group-hover:text-emerald-500 transition-colors">
                       <i className="bi bi-camera-fill text-2xl"></i>
                     </div>
-                    <p className="text-sm font-semibold group-hover:text-emerald-600">
-                      Klik untuk upload foto produk
-                    </p>
-                    <p className="text-xs text-slate-400">Maksimal 2MB</p>
+                    <div>
+                      <p className="text-sm font-bold text-slate-600 group-hover:text-emerald-700">
+                        Upload Foto
+                      </p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        Format JPG/PNG, Max 2MB
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
@@ -142,11 +157,11 @@ export default function AddProductPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Contoh: Keripik Pisang Original"
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="mb-1 block text-sm font-bold text-slate-700">
                   Harga (Rp)
@@ -158,7 +173,7 @@ export default function AddProductPage() {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     placeholder="15000"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition pl-10"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pl-11 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400"
                   />
                   <span className="absolute left-4 top-3 text-sm font-bold text-slate-400">
                     Rp
@@ -169,17 +184,20 @@ export default function AddProductPage() {
                 <label className="mb-1 block text-sm font-bold text-slate-700">
                   Satuan
                 </label>
-                <select
-                  value={unit}
-                  onChange={(e) => setUnit(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
-                >
-                  {unitOptions.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={unit}
+                    onChange={(e) => setUnit(e.target.value)}
+                    className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+                  >
+                    {unitOptions.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                  <i className="bi bi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                </div>
                 {unit === "Lainnya" && (
                   <input
                     required
@@ -196,14 +214,17 @@ export default function AddProductPage() {
               <label className="mb-1 block text-sm font-bold text-slate-700">
                 Status Stok
               </label>
-              <select
-                value={stockStatus}
-                onChange={(e) => setStockStatus(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
-              >
-                <option value="ready">Ready Stock</option>
-                <option value="preorder">Pre-Order (PO)</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={stockStatus}
+                  onChange={(e) => setStockStatus(e.target.value)}
+                  className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+                >
+                  <option value="ready">Ready Stock</option>
+                  <option value="preorder">Pre-Order (PO)</option>
+                </select>
+                <i className="bi bi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+              </div>
             </div>
 
             <div>
@@ -215,17 +236,32 @@ export default function AddProductPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Jelaskan keunggulan produk Anda..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400 resize-none"
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-emerald-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-emerald-500/30 disabled:opacity-70 disabled:hover:translate-y-0"
-            >
-              {loading ? "Menyimpan..." : "Simpan Produk"}
-            </button>
+            <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 mt-8">
+              <Link
+                href="/umkm/dashboard"
+                className="flex items-center justify-center rounded-xl border border-slate-200 bg-white py-3.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+              >
+                Batal
+              </Link>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex items-center justify-center rounded-xl bg-emerald-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-emerald-500/30 disabled:opacity-70 disabled:hover:translate-y-0"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                    Menyimpan...
+                  </span>
+                ) : (
+                  "Simpan Produk"
+                )}
+              </button>
+            </div>
           </form>
         </div>
       </main>

@@ -62,7 +62,7 @@ export default function UmkmLoginPage() {
               Nomor HP
             </label>
             <div className="relative">
-              <i className="bi bi-phone absolute left-4 top-3.5 text-slate-400"></i>
+              <i className="bi bi-phone absolute left-4 top-3 text-slate-400"></i>
               <input
                 type="tel"
                 required
@@ -78,7 +78,7 @@ export default function UmkmLoginPage() {
               Password
             </label>
             <div className="relative">
-              <i className="bi bi-lock absolute left-4 top-3.5 text-slate-400"></i>
+              <i className="bi bi-lock absolute left-4 top-3 text-slate-400"></i>
               <input
                 type="password"
                 required
@@ -106,6 +106,19 @@ export default function UmkmLoginPage() {
             className="font-bold text-emerald-600 hover:underline"
           >
             Daftar UMKM Baru
+          </Link>
+        </div>
+
+        <div className="mt-8 border-t border-slate-100 pt-6 text-center">
+          <p className="mb-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            Area Petugas
+          </p>
+          <Link
+            href="/admin/login"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 hover:border-slate-300 group"
+          >
+            <i className="bi bi-shield-lock-fill text-slate-400 group-hover:text-emerald-600 transition-colors"></i>
+            Masuk sebagai Admin / Kades
           </Link>
         </div>
       </div>

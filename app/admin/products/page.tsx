@@ -3,14 +3,28 @@ import { prisma } from "@/lib/prisma";
 import { getSessionAdmin } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import AdminProductList from "./product-list";
+import RefreshButton from "@/app/components/refresh-button";
 
-export default async function AdminProductsPage() {
+import SearchInput from "@/app/components/search-input";
+
+export default async function AdminProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
   const admin = await getSessionAdmin();
   if (!admin) redirect("/admin/login");
+
+  const { q } = await searchParams;
+  const query = q || "";
 
   const pendingProducts = await prisma.product.findMany({
     where: {
       verified: false,
+      OR: [
+        { name: { contains: query } },
+        { business: { name: { contains: query } } },
+      ],
     },
     include: {
       business: true,
@@ -25,15 +39,20 @@ export default async function AdminProductsPage() {
       <AdminNavbar />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
-        <div className="mb-8">
-          <p className="text-sm font-semibold text-emerald-700">Admin Desa</p>
-          <h2 className="text-3xl font-bold text-slate-900">
-            Verifikasi Produk
-          </h2>
-          <p className="mt-2 text-slate-600">
-            Daftar produk baru yang menunggu persetujuan untuk ditampilkan di
-            katalog ({pendingProducts.length} menunggu verifikasi).
-          </p>
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">
+              Verifikasi Produk
+            </h1>
+            <p className="mt-2 text-slate-600">
+              Daftar produk baru yang perlu disetujui sebelum tayang.
+            </p>
+          </div>
+          <RefreshButton />
+        </div>
+
+        <div className="mb-6">
+          <SearchInput placeholder="Cari produk atau nama UMKM..." />
         </div>
 
         <AdminProductList initialProducts={pendingProducts} />

@@ -3,6 +3,7 @@ import { getSessionAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import RefreshButton from "@/app/components/refresh-button";
 
 export default async function AdminDashboard() {
   const admin = await getSessionAdmin();
@@ -37,7 +38,6 @@ export default async function AdminDashboard() {
             Berikut adalah ringkasan aktivitas dan panduan sistem Mekarsawit.
           </p>
         </div>
-
         {/* System Flow (Infographic style) */}
         <div className="mb-12 rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
           <h3 className="mb-6 text-lg font-bold text-slate-900">
@@ -107,6 +107,12 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Statistics Grid */}
+        <div className="mb-6 flex items-center justify-between">
+          <h3 className="text-lg font-bold text-slate-900">
+            Statistik Terkini
+          </h3>
+          <RefreshButton />
+        </div>
         <div className="mb-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-100">
             <div className="mb-2 flex items-center justify-between">
@@ -165,7 +171,6 @@ export default async function AdminDashboard() {
             </span>
           </Link>
         </div>
-
         {/* Quick Actions */}
         <h3 className="mb-6 text-lg font-bold text-slate-900">Aksi Cepat</h3>
         <div className="grid gap-6 sm:grid-cols-3">

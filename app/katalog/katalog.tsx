@@ -1,5 +1,7 @@
 ﻿import { getLandingCatalog } from "@/lib/services/catalog";
+
 import Link from "next/link";
+import PublicNavbar from "@/app/components/public-navbar";
 
 export default async function KatalogPage() {
   const catalog = await getLandingCatalog();
@@ -7,36 +9,7 @@ export default async function KatalogPage() {
   return (
     <div className="min-h-screen font-sans text-slate-900 selection:bg-emerald-500/30">
       {/* Navbar */}
-      <nav className="fixed top-0 z-50 w-full border-b border-white/50 bg-white/90 backdrop-blur-md transition-all shadow-sm">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-white p-1 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/logo.png"
-                  alt="Logo Desa Mekar Sawit"
-                  className="h-full w-full object-contain"
-                />
-              </div>
-              <div>
-                <h1 className="text-sm font-bold tracking-tight text-slate-900 group-hover:text-emerald-700 transition-colors">
-                  Desa Mekar Sawit
-                </h1>
-                <p className="text-[10px] uppercase tracking-wider text-slate-600 font-semibold">
-                  Langkat, Sumatera Utara
-                </p>
-              </div>
-            </Link>
-          </div>
-          <Link
-            href="/"
-            className="rounded-full border border-emerald-200 px-4 py-2 text-sm font-bold text-emerald-800 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50 active:scale-95"
-          >
-            ← Kembali ke Beranda
-          </Link>
-        </div>
-      </nav>
+      <PublicNavbar />
 
       <main className="relative pt-24 pb-20 bg-slate-50/50">
         {/* Header */}

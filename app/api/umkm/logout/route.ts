@@ -1,9 +1,10 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   const url = new URL("/", req.url);
   const res = NextResponse.redirect(url);
-  res.cookies.set("admin_session", "", {
+  // Clear the umkm_session cookie
+  res.cookies.set("umkm_session", "", {
     httpOnly: true,
     sameSite: "lax",
     path: "/",

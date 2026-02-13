@@ -71,20 +71,25 @@ export default function EditProductPage({
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
       <UmkmNavbar />
-      <main className="mx-auto max-w-7xl p-6">
-        <div className="mx-auto max-w-2xl rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
-          <div className="mb-8 flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Edit Produk</h1>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl rounded-3xl bg-white p-6 sm:p-8 shadow-sm border border-slate-100">
+          <header className="mb-8 text-center sm:text-left">
             <Link
               href="/umkm/dashboard"
-              className="text-sm font-bold text-slate-500 hover:text-slate-700"
+              className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-700 sm:hidden"
             >
-              Batal
+              <i className="bi bi-arrow-left"></i>
+              Kembali
             </Link>
-          </div>
+            <h1 className="text-2xl font-bold text-slate-900">Edit Produk</h1>
+            <p className="mt-2 text-slate-600">
+              Perbarui informasi produk Anda di sini.
+            </p>
+          </header>
 
           {error && (
-            <div className="mb-6 rounded-xl bg-red-50 p-4 text-sm text-red-700 border border-red-100">
+            <div className="mb-6 rounded-2xl bg-red-50 p-4 text-sm text-red-700 border border-red-100 flex items-center gap-3">
+              <i className="bi bi-exclamation-triangle-fill text-lg"></i>
               {error}
             </div>
           )}
@@ -98,22 +103,29 @@ export default function EditProductPage({
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="mb-1 block text-sm font-bold text-slate-700">
                   Harga (Rp)
                 </label>
-                <input
-                  required
-                  type="number"
-                  value={form.price}
-                  onChange={(e) => setForm({ ...form, price: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
-                />
+                <div className="relative">
+                  <input
+                    required
+                    type="number"
+                    value={form.price}
+                    onChange={(e) =>
+                      setForm({ ...form, price: e.target.value })
+                    }
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pl-11 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400"
+                  />
+                  <span className="absolute left-4 top-3 text-sm font-bold text-slate-400">
+                    Rp
+                  </span>
+                </div>
               </div>
               <div>
                 <label className="mb-1 block text-sm font-bold text-slate-700">
@@ -123,7 +135,7 @@ export default function EditProductPage({
                   required
                   value={form.unit}
                   onChange={(e) => setForm({ ...form, unit: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400"
                 />
               </div>
             </div>
@@ -132,32 +144,38 @@ export default function EditProductPage({
               <label className="mb-1 block text-sm font-bold text-slate-700">
                 Status Stok
               </label>
-              <select
-                value={form.stockStatus}
-                onChange={(e) =>
-                  setForm({ ...form, stockStatus: e.target.value })
-                }
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
-              >
-                <option value="ready">Ready Stock</option>
-                <option value="preorder">Pre-Order (PO)</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={form.stockStatus}
+                  onChange={(e) =>
+                    setForm({ ...form, stockStatus: e.target.value })
+                  }
+                  className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+                >
+                  <option value="ready">Ready Stock</option>
+                  <option value="preorder">Pre-Order (PO)</option>
+                </select>
+                <i className="bi bi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+              </div>
             </div>
 
             <div>
               <label className="mb-1 block text-sm font-bold text-slate-700">
                 Status Aktif
               </label>
-              <select
-                value={form.active ? "true" : "false"}
-                onChange={(e) =>
-                  setForm({ ...form, active: e.target.value === "true" })
-                }
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
-              >
-                <option value="true">Aktif (Tampil di Katalog)</option>
-                <option value="false">Sembunyikan</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={form.active ? "true" : "false"}
+                  onChange={(e) =>
+                    setForm({ ...form, active: e.target.value === "true" })
+                  }
+                  className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+                >
+                  <option value="true">Aktif (Tampil di Katalog)</option>
+                  <option value="false">Sembunyikan</option>
+                </select>
+                <i className="bi bi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+              </div>
             </div>
 
             <div>
@@ -170,7 +188,7 @@ export default function EditProductPage({
                 onChange={(e) =>
                   setForm({ ...form, description: e.target.value })
                 }
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400 resize-none"
               />
             </div>
 
@@ -181,17 +199,32 @@ export default function EditProductPage({
               <input
                 value={form.imageUrl}
                 onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400"
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={saving}
-              className="w-full rounded-xl bg-emerald-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-emerald-500/30 disabled:opacity-70 disabled:hover:translate-y-0"
-            >
-              {saving ? "Menyimpan..." : "Simpan Perubahan"}
-            </button>
+            <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 mt-8">
+              <Link
+                href="/umkm/dashboard"
+                className="flex items-center justify-center rounded-xl border border-slate-200 bg-white py-3.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+              >
+                Batal
+              </Link>
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex items-center justify-center rounded-xl bg-emerald-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-emerald-500/30 disabled:opacity-70 disabled:hover:translate-y-0"
+              >
+                {saving ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                    Menyimpan...
+                  </span>
+                ) : (
+                  "Simpan Perubahan"
+                )}
+              </button>
+            </div>
           </form>
         </div>
       </main>

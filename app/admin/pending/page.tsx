@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { buildWaLink } from "@/lib/wa";
+import RefreshButton from "@/app/components/refresh-button";
 
 async function getSessionUser() {
   const cookieStore = await cookies();
@@ -14,12 +15,31 @@ async function getSessionUser() {
   return user;
 }
 
-export default async function PendingPage() {
+import SearchInput from "@/app/components/search-input";
+import CategoryFilter from "@/app/components/category-filter";
+
+export default async function PendingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; category?: string }>;
+}) {
   const user = await getSessionUser();
   if (!user) redirect("/admin/login");
 
+  const { q, category } = await searchParams;
+  const query = q || "";
+  const categoryFilter = category || undefined;
+
   const pending = await prisma.business.findMany({
-    where: { verified: false },
+    where: {
+      verified: false,
+      category: categoryFilter,
+      OR: [
+        { name: { contains: query } },
+        { description: { contains: query } },
+        { owner: { phone: { contains: query } } },
+      ],
+    },
     include: { owner: true },
     orderBy: { createdAt: "desc" },
   });
@@ -40,6 +60,12 @@ export default async function PendingPage() {
               {pending.length} menunggu verifikasi).
             </p>
           </div>
+          <RefreshButton />
+        </div>
+
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row">
+          <SearchInput placeholder="Cari UMKM, Owner..." />
+          <CategoryFilter />
         </div>
 
         {pending.length === 0 ? (

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ProductList from "../dashboard/product-list";
 import Link from "next/link";
+import RefreshButton from "@/app/components/refresh-button";
 
 export default async function UmkmProductListPage() {
   const user = await getSessionUmkm();
@@ -28,13 +29,17 @@ export default async function UmkmProductListPage() {
               Kelola daftar produk yang ditampilkan di katalog desa.
             </p>
           </div>
-          <Link
-            href="/umkm/products/add"
-            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-emerald-500/30"
-          >
-            <i className="bi bi-plus-lg"></i>
-            Tambah Produk Baru
-          </Link>
+
+          <div className="flex items-center gap-3">
+            <RefreshButton />
+            <Link
+              href="/umkm/products/add"
+              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-emerald-500/30"
+            >
+              <i className="bi bi-plus-lg"></i>
+              Tambah Produk Baru
+            </Link>
+          </div>
         </div>
 
         {business.products.length > 0 ? (

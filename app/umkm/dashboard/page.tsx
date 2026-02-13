@@ -4,6 +4,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import ProductList from "./product-list";
 import BusinessForm from "./business-form";
+import RefreshButton from "@/app/components/refresh-button";
 import UmkmNavbar from "../umkm-navbar";
 
 export default async function UmkmDashboard() {
@@ -144,12 +145,15 @@ export default async function UmkmDashboard() {
               <h3 className="text-lg font-bold text-slate-900">
                 Produk Terbaru
               </h3>
-              <Link
-                href="/umkm/products"
-                className="text-sm font-bold text-emerald-600 hover:text-emerald-700 hover:underline"
-              >
-                Lihat Semua →
-              </Link>
+              <div className="flex items-center gap-3">
+                <RefreshButton />
+                <Link
+                  href="/umkm/products"
+                  className="text-sm font-bold text-emerald-600 hover:text-emerald-700 hover:underline"
+                >
+                  Lihat Semua →
+                </Link>
+              </div>
             </div>
             {business.products.length > 0 ? (
               <ProductList products={business.products.slice(0, 4)} />
