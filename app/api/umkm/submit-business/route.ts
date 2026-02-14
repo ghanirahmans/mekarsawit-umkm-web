@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUmkm } from "@/lib/auth";
 import { uploadFile } from "@/lib/storage";
+import { normalizePhoneNumber } from "@/lib/wa";
 
 function slugify(text: string) {
   return text
@@ -20,7 +21,8 @@ export async function POST(req: Request) {
     const businessName = formData.get("businessName") as string;
     const category = formData.get("category") as string;
     const address = formData.get("address") as string;
-    const whatsapp = formData.get("whatsapp") as string;
+    const rawWhatsapp = formData.get("whatsapp") as string;
+    const whatsapp = normalizePhoneNumber(rawWhatsapp);
     const description = formData.get("description") as string;
     const imageFile = formData.get("imageFile") as File | null;
 

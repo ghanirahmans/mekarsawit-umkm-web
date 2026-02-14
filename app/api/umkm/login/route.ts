@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { normalizePhoneNumber } from "@/lib/wa";
 
 export async function POST(req: Request) {
-  const { phone, password } = await req.json();
-  if (!phone || !password)
+  const { phone: rawPhone, password } = await req.json();
+  if (!rawPhone || !password)
     return NextResponse.json(
       { error: "Isi nomor HP dan password." },
       { status: 400 },
     );
 
+  const phone = normalizePhoneNumber(rawPhone);
   const user = await prisma.user.findUnique({ where: { phone } });
 
   // Check if user exists and has a password (only verified/registered ones with password can login)

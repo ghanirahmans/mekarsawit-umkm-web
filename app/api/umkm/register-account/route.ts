@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { uploadFile } from "@/lib/storage";
+import { normalizePhoneNumber } from "@/lib/wa";
 
 function slugify(text: string) {
   return text
@@ -16,7 +17,8 @@ export async function POST(req: Request) {
 
     // User Data
     const name = formData.get("name") as string;
-    const phone = formData.get("phone") as string;
+    const rawPhone = formData.get("phone") as string;
+    const phone = normalizePhoneNumber(rawPhone);
     const password = formData.get("password") as string;
     const villageCode = formData.get("villageCode") as string;
 
@@ -24,7 +26,8 @@ export async function POST(req: Request) {
     const businessName = formData.get("businessName") as string;
     const category = formData.get("category") as string;
     const address = formData.get("address") as string;
-    const whatsapp = formData.get("whatsapp") as string;
+    const rawWhatsapp = formData.get("whatsapp") as string;
+    const whatsapp = normalizePhoneNumber(rawWhatsapp);
     const description = formData.get("description") as string;
     const imageFile = formData.get("imageFile") as File | null;
 
