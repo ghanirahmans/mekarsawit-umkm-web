@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 
 export default function SearchInput({ placeholder }: { placeholder: string }) {
   const searchParams = useSearchParams();
@@ -12,18 +12,20 @@ export default function SearchInput({ placeholder }: { placeholder: string }) {
 
   // Sync internal state with URL params (e.g. on back button)
   useEffect(() => {
-    setTerm(searchParams.get("q") || "");
+    startTransition(() => {
+      setTerm(searchParams.get("q") || "");
+    });
   }, [searchParams]);
 
-  const handleSearch = useDebouncedCallback((term: string) => {
+  const handleSearch = useDebouncedCallback((nextTerm: string) => {
     const params = new URLSearchParams(searchParams);
-    if (term) {
-      params.set("q", term);
+    if (nextTerm) {
+      params.set("q", nextTerm);
     } else {
       params.delete("q");
     }
     replace(`${pathname}?${params.toString()}`);
-  }, 300);
+  }, 500);
 
   return (
     <div className="relative flex-1">

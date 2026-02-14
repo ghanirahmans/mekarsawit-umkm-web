@@ -1,4 +1,5 @@
 import fs from "fs";
+import { appendFile } from "fs/promises";
 import path from "path";
 
 const logDir = path.join(process.cwd(), "logs");
@@ -20,11 +21,11 @@ function writeLine(message: string) {
   }
 
   ensureLogDir();
-  try {
-    fs.appendFileSync(logFile, message + "\n", { encoding: "utf8" });
-  } catch (error) {
-    console.error("log_write_error", error);
-  }
+  void appendFile(logFile, message + "\n", { encoding: "utf8" }).catch(
+    (error) => {
+      console.error("log_write_error", error);
+    },
+  );
 }
 
 type LogPayload = Record<string, unknown>;

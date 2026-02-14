@@ -11,6 +11,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
     "test": "jest",
+    "test:e2e": "playwright test",
     "test:watch": "jest --watch"
   },
   "dependencies": {

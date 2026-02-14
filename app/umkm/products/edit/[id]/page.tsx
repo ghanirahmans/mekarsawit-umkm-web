@@ -1,9 +1,29 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import UmkmNavbar from "../../../umkm-navbar";
+
+type FormState = {
+  name: string;
+  price: string;
+  unit: string;
+  stockStatus: "ready" | "preorder";
+  description: string;
+  active: boolean;
+};
+
+type ProductResponse = {
+  name: string;
+  price: number;
+  unit: string;
+  stockStatus: "ready" | "preorder";
+  description?: string | null;
+  imageUrl?: string | null;
+  active: boolean;
+  error?: string;
+};
 
 export default function EditProductPage({
   params,
@@ -15,20 +35,23 @@ export default function EditProductPage({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     name: "",
     price: "",
     unit: "",
     stockStatus: "ready",
     description: "",
-    imageUrl: "",
     active: true,
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState("");
 
   useEffect(() => {
-    fetch(`/api/umkm/products/${id}`)
+    let active = true;
+    fetch(`/api/umkm/products/${id}`, { cache: "no-store" })
       .then((res) => res.json())
-      .then((data) => {
+      .then((data: ProductResponse) => {
+        if (!active) return;
         if (data.error) throw new Error(data.error);
         setForm({
           name: data.name,
@@ -36,34 +59,72 @@ export default function EditProductPage({
           unit: data.unit,
           stockStatus: data.stockStatus,
           description: data.description || "",
-          imageUrl: data.imageUrl || "",
           active: data.active,
         });
+        setPreviewUrl(data.imageUrl || "");
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err.message);
+      .catch((err: unknown) => {
+        if (!active) return;
+        const message =
+          err instanceof Error ? err.message : "Gagal mengambil data produk.";
+        setError(message);
         setLoading(false);
       });
+
+    return () => {
+      active = false;
+    };
   }, [id]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Ukuran gambar maksimal 2MB");
+      return;
+    }
+
+    setImageFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setError("");
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setError("");
+
     try {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("price", form.price);
+      formData.append("unit", form.unit);
+      formData.append("stockStatus", form.stockStatus);
+      formData.append("description", form.description);
+      formData.append("active", String(form.active));
+      if (imageFile) {
+        formData.append("imageFile", imageFile);
+      }
+
       const res = await fetch(`/api/umkm/products/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: formData,
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      router.push("/umkm/dashboard");
+      if (!res.ok) throw new Error(data.error || "Gagal menyimpan perubahan.");
+
+      router.push("/umkm/products");
       router.refresh();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Gagal menyimpan perubahan.";
+      setError(message);
       setSaving(false);
+      return;
     }
+
+    setSaving(false);
   }
 
   if (loading) return <div className="p-10 text-center">Loading...</div>;
@@ -75,7 +136,7 @@ export default function EditProductPage({
         <div className="mx-auto max-w-2xl rounded-3xl bg-white p-6 sm:p-8 shadow-sm border border-slate-100">
           <header className="mb-8 text-center sm:text-left">
             <Link
-              href="/umkm/dashboard"
+              href="/umkm/products"
               className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-700 sm:hidden"
             >
               <i className="bi bi-arrow-left"></i>
@@ -95,6 +156,42 @@ export default function EditProductPage({
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex flex-col items-center justify-center">
+              <label className="mb-2 block w-full text-sm font-bold text-slate-700 sm:w-auto">
+                Foto Produk
+              </label>
+              <div className="relative group aspect-square w-full max-w-[240px] overflow-hidden rounded-3xl border-2 border-dashed border-slate-300 bg-slate-50 hover:border-emerald-500 transition-colors cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="absolute inset-0 z-10 w-full h-full opacity-0 cursor-pointer"
+                />
+                {previewUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-3 p-4 text-center">
+                    <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400 group-hover:text-emerald-500 transition-colors">
+                      <i className="bi bi-camera-fill text-2xl"></i>
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-600 group-hover:text-emerald-700">
+                        Upload Foto Baru
+                      </p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        Format JPG/PNG, Max 2MB
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div>
               <label className="mb-1 block text-sm font-bold text-slate-700">
                 Nama Produk
@@ -103,7 +200,7 @@ export default function EditProductPage({
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
               />
             </div>
 
@@ -117,10 +214,8 @@ export default function EditProductPage({
                     required
                     type="number"
                     value={form.price}
-                    onChange={(e) =>
-                      setForm({ ...form, price: e.target.value })
-                    }
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pl-11 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400"
+                    onChange={(e) => setForm({ ...form, price: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pl-11 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
                   />
                   <span className="absolute left-4 top-3 text-sm font-bold text-slate-400">
                     Rp
@@ -135,7 +230,7 @@ export default function EditProductPage({
                   required
                   value={form.unit}
                   onChange={(e) => setForm({ ...form, unit: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
                 />
               </div>
             </div>
@@ -148,7 +243,10 @@ export default function EditProductPage({
                 <select
                   value={form.stockStatus}
                   onChange={(e) =>
-                    setForm({ ...form, stockStatus: e.target.value })
+                    setForm({
+                      ...form,
+                      stockStatus: e.target.value as "ready" | "preorder",
+                    })
                   }
                   className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
                 >
@@ -188,24 +286,13 @@ export default function EditProductPage({
                 onChange={(e) =>
                   setForm({ ...form, description: e.target.value })
                 }
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400 resize-none"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1 block text-sm font-bold text-slate-700">
-                Link Gambar
-              </label>
-              <input
-                value={form.imageUrl}
-                onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition placeholder:text-slate-400"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition resize-none"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 mt-8">
               <Link
-                href="/umkm/dashboard"
+                href="/umkm/products"
                 className="flex items-center justify-center rounded-xl border border-slate-200 bg-white py-3.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
               >
                 Batal

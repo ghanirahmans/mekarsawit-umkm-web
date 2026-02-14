@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
-import { ADMIN_COOKIE_LEGACY_NAME, ADMIN_COOKIE_NAME } from "@/lib/auth";
+import {
+  ADMIN_COOKIE_LEGACY_NAME,
+  ADMIN_COOKIE_NAME,
+  getSessionCookieOptions,
+} from "@/lib/session";
 
 export async function GET(req: Request) {
   const res = NextResponse.redirect(new URL("/", req.url));
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production" && !!process.env.VERCEL,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
-  } as const;
+  const cookieOptions = getSessionCookieOptions(0);
 
   res.cookies.set(ADMIN_COOKIE_NAME, "", cookieOptions);
   res.cookies.set(ADMIN_COOKIE_LEGACY_NAME, "", cookieOptions);

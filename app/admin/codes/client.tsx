@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, useCallback } from "react";
 import AdminNavbar from "@/app/admin/admin-navbar";
 import Modal from "@/app/components/modal";
 import SearchInput from "@/app/components/search-input";
@@ -26,18 +26,33 @@ export default function VillageCodesClient() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
 
+  const loadCodes = useCallback(async () => {
+    setLoading(true);
+    const data = await fetchCodes(query);
+    if ("error" in data) {
+      window.location.href = "/admin/login";
+      return;
+    }
+    setCodes(data || []);
+    setLoading(false);
+  }, [query]);
+
   useEffect(() => {
     let active = true;
-    startTransition(() => setLoading(true));
-    fetchCodes(query).then((data) => {
+    const run = async () => {
+      const data = await fetchCodes(query);
       if (!active) return;
       if ("error" in data) {
         window.location.href = "/admin/login";
-      } else {
-        setCodes(data || []);
-        setLoading(false);
+        return;
       }
-    });
+      setCodes(data || []);
+      setLoading(false);
+    };
+
+    startTransition(() => setLoading(true));
+    void run();
+
     return () => {
       active = false;
     };
@@ -52,9 +67,7 @@ export default function VillageCodesClient() {
         await createCode(newCode);
         setNewCode("");
         setModalOpen(false);
-        // Refresh data
-        const data = await fetchCodes(query);
-        if (!("error" in data)) setCodes(data || []);
+        await loadCodes();
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Gagal membuat kode";
         alert(message);
@@ -73,9 +86,7 @@ export default function VillageCodesClient() {
     startTransition(async () => {
       try {
         await toggleCode(id, currentStatus);
-        // Refresh
-        const data = await fetchCodes(query);
-        if (!("error" in data)) setCodes(data || []);
+        await loadCodes();
       } catch (err: unknown) {
         console.error(err);
         const message = err instanceof Error ? err.message : "Gagal mengubah status";
@@ -90,9 +101,7 @@ export default function VillageCodesClient() {
     startTransition(async () => {
       try {
         await deleteCode(id);
-        // Refresh
-        const data = await fetchCodes(query);
-        if (!("error" in data)) setCodes(data || []);
+        await loadCodes();
       } catch (err: unknown) {
         console.error(err);
         const message = err instanceof Error ? err.message : "Gagal menghapus kode";
@@ -125,8 +134,21 @@ export default function VillageCodesClient() {
         </div>
 
         {/* Search & Filter */}
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
           <SearchInput placeholder="Cari kode..." />
+          <button
+            type="button"
+            onClick={() => {
+              void loadCodes();
+            }}
+            disabled={loading || isPending}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <i
+              className={`bi bi-arrow-clockwise text-base ${loading ? "animate-spin" : ""}`}
+            ></i>
+            Refresh
+          </button>
         </div>
 
         {/* Content */}

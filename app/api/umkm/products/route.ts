@@ -43,7 +43,10 @@ export async function POST(req: Request) {
     }
 
     const slug = `${slugify(name)}-${Date.now().toString(36)}`;
-    const priceInt = parseInt(price);
+    const priceInt = Number(price);
+    if (Number.isNaN(priceInt)) {
+      return NextResponse.json({ error: "Harga tidak valid." }, { status: 400 });
+    }
 
     const product = await prisma.product.create({
       data: {

@@ -1,10 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import DaftarUmkmScreen from "@/app/daftar-umkm/daftar-umkm";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-// Mock useRouter
+// Mock next/navigation
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
+  usePathname: jest.fn(),
 }));
 
 // Mock fetch
@@ -15,6 +16,7 @@ describe("DaftarUmkmScreen", () => {
 
   beforeEach(() => {
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
+    (usePathname as jest.Mock).mockReturnValue("/daftar-umkm");
     (global.fetch as jest.Mock).mockClear();
     window.alert = jest.fn();
   });

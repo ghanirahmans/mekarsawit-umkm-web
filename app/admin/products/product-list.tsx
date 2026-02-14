@@ -19,7 +19,7 @@ type Product = {
 export default function AdminProductList({
   initialProducts,
 }: {
-  initialProducts: any[];
+  initialProducts: Product[];
 }) {
   const router = useRouter();
   const [products, setProducts] = useState(initialProducts);

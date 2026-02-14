@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { ADMIN_COOKIE_LEGACY_NAME, ADMIN_COOKIE_NAME } from "@/lib/auth";
+import {
+  ADMIN_COOKIE_LEGACY_NAME,
+  ADMIN_COOKIE_NAME,
+  getSessionCookieOptions,
+} from "@/lib/session";
 import { logAuth } from "@/lib/logger";
 
 export async function POST(req: Request) {
@@ -30,13 +34,7 @@ export async function POST(req: Request) {
   }
 
   const res = NextResponse.json({ ok: true });
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production" && !!process.env.VERCEL,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-  } as const;
+  const cookieOptions = getSessionCookieOptions(60 * 60 * 24 * 7);
 
   res.cookies.set(ADMIN_COOKIE_NAME, user.id, cookieOptions);
   // Keep legacy cookie temporarily so older routes/clients stay compatible.

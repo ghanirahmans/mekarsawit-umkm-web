@@ -4,7 +4,20 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Modal from "@/app/components/modal";
 
-export default function UserList({ users }: { users: any[] }) {
+type BusinessItem = {
+  id: string;
+  name: string;
+  category: string;
+};
+
+type UserItem = {
+  id: string;
+  phone: string | null;
+  role: "super_admin" | "admin_umkm";
+  businesses: BusinessItem[];
+};
+
+export default function UserList({ users }: { users: UserItem[] }) {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
@@ -107,7 +120,7 @@ export default function UserList({ users }: { users: any[] }) {
                 Usaha Terkait:
               </p>
               {u.businesses.length > 0 ? (
-                u.businesses.map((b: any) => (
+                u.businesses.map((b) => (
                   <div key={b.id} className="mb-2 last:mb-0">
                     <div className="font-semibold text-slate-900 text-sm">
                       {b.name}
@@ -165,7 +178,7 @@ export default function UserList({ users }: { users: any[] }) {
                 </td>
                 <td className="px-6 py-4">
                   {u.businesses.length > 0 ? (
-                    u.businesses.map((b: any) => (
+                    u.businesses.map((b) => (
                       <div key={b.id}>
                         <div className="font-semibold text-slate-900">
                           {b.name}

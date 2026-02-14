@@ -3,6 +3,11 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { uploadFile } from "@/lib/storage";
 import { normalizePhoneNumber } from "@/lib/wa";
+import {
+  UMKM_COOKIE_NAME,
+  getSessionCookieOptions,
+  getStatusCookieOptions,
+} from "@/lib/session";
 
 function slugify(text: string) {
   return text
@@ -139,17 +144,17 @@ export async function POST(req: Request) {
 
     // Auto-login: Set Session Cookie
     if (newUser) {
-      response.cookies.set("umkm_session", newUser.id, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production" && !!process.env.VERCEL,
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      });
+      const ttl = 60 * 60 * 24 * 7;
+      response.cookies.set(
+        UMKM_COOKIE_NAME,
+        newUser.id,
+        getSessionCookieOptions(ttl),
+      );
+      response.cookies.set("umkm_logged_in", "1", getStatusCookieOptions(ttl));
     }
 
     return response;
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Registration Error:", err);
     return NextResponse.json(
       { error: "Terjadi kesalahan server saat pendaftaran." },

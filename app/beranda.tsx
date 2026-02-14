@@ -206,23 +206,6 @@ export default async function HomeScreen() {
   );
 }
 
-function NavLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="text-sm font-semibold text-slate-700 transition-colors hover:text-emerald-700"
-    >
-      {children}
-    </Link>
-  );
-}
-
 function StatItem({
   label,
   value,
@@ -274,7 +257,10 @@ function FeatureCard({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProductCard({ item }: { item: any }) {
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 transition-all hover:shadow-lg hover:ring-emerald-300">
+    <Link
+      href={`/katalog/${item.businessSlug}/${item.productSlug}`}
+      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 transition-all hover:shadow-lg hover:ring-emerald-300"
+    >
       <div className="relative aspect-square overflow-hidden bg-slate-100 border-b border-slate-100">
         {item.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -312,15 +298,11 @@ function ProductCard({ item }: { item: any }) {
           </span>
         </div>
 
-        <Link
-          href={item.waLink}
-          target="_blank"
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-emerald-100 bg-emerald-50 py-2.5 text-sm font-bold text-emerald-700 transition hover:bg-emerald-600 hover:border-emerald-600 hover:text-white hover:shadow-md hover:shadow-emerald-200"
-        >
-          <i className="bi bi-whatsapp"></i>
-          Pesan
-        </Link>
+        <span className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-emerald-100 bg-emerald-50 py-2.5 text-sm font-bold text-emerald-700 transition group-hover:bg-emerald-600 group-hover:border-emerald-600 group-hover:text-white group-hover:shadow-md group-hover:shadow-emerald-200">
+          <i className="bi bi-eye"></i>
+          Lihat Detail
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }

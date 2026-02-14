@@ -1,13 +1,17 @@
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { logAuth } from "@/lib/logger";
+import {
+  ADMIN_COOKIE_LEGACY_NAME,
+  ADMIN_COOKIE_NAME,
+  UMKM_COOKIE_NAME,
+} from "@/lib/session";
 
-export const ADMIN_COOKIE_NAME = "admin_token";
-export const ADMIN_COOKIE_LEGACY_NAME = "admin_session";
+const LOG_AUTH_SUCCESS = process.env.LOG_AUTH_SUCCESS === "1";
 
 export async function getSessionUmkm() {
   const cookieStore = await cookies();
-  const session = cookieStore.get("umkm_session")?.value;
+  const session = cookieStore.get(UMKM_COOKIE_NAME)?.value;
   if (!session) {
     logAuth({ event: "umkm-auth-miss", umkm_session: false });
     return null;
@@ -25,7 +29,9 @@ export async function getSessionUmkm() {
     return null;
   }
 
-  logAuth({ event: "umkm-auth-ok", session });
+  if (LOG_AUTH_SUCCESS) {
+    logAuth({ event: "umkm-auth-ok", session });
+  }
 
   return user;
 }
@@ -57,7 +63,9 @@ export async function getSessionAdmin() {
     return null;
   }
 
-  logAuth({ event: "admin-auth-ok", session });
+  if (LOG_AUTH_SUCCESS) {
+    logAuth({ event: "admin-auth-ok", session });
+  }
 
   return user;
 }

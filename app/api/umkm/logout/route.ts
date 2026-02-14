@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
+import {
+  UMKM_COOKIE_NAME,
+  getSessionCookieOptions,
+  getStatusCookieOptions,
+} from "@/lib/session";
 
 function clearUmkmSession(req: Request) {
   const url = new URL("/", req.url);
   const res = NextResponse.redirect(url);
-  // Clear the umkm_session cookie
-  res.cookies.set("umkm_session", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production" && !!process.env.VERCEL,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
-  });
+  // Clear the UMKM session cookie
+  res.cookies.set(UMKM_COOKIE_NAME, "", getSessionCookieOptions(0));
+  res.cookies.set("umkm_logged_in", "", getStatusCookieOptions(0));
   return res;
 }
 

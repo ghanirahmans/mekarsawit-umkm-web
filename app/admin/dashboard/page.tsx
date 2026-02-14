@@ -17,14 +17,12 @@ export default async function AdminDashboard() {
 
   // Fetch Stats
   const [
-    totalUsers,
     pendingBusinesses,
     activeBusinesses,
     pendingProducts,
     activeProducts,
     totalViewsResult,
   ] = await Promise.all([
-    prisma.user.count(),
     prisma.business.count({ where: { verified: false } }),
     prisma.business.count({ where: { verified: true } }),
     prisma.product.count({ where: { verified: false } }),

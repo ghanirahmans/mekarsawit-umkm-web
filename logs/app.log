@@ -42,3 +42,12 @@
 {"ts":"2026-02-14T07:50:21.737Z","category":"auth","event":"admin-auth-ok","session":"00000000-0000-0000-0000-000000000001"}
 {"ts":"2026-02-14T07:50:28.025Z","category":"auth","event":"admin-auth-ok","session":"00000000-0000-0000-0000-000000000001"}
 {"ts":"2026-02-14T14:12:53.684Z","category":"auth","event":"umkm-auth-ok","session":"f70cb8b1-1ba5-43b8-aca8-6579c43e82f6"}
+{"ts":"2026-02-14T14:51:14.398Z","category":"auth","event":"umkm-auth-miss","umkm_session":false}
+{"ts":"2026-02-14T14:51:24.312Z","category":"auth","event":"umkm-login-success","phone":"+6285186836565","userId":"f70cb8b1-1ba5-43b8-aca8-6579c43e82f6"}
+{"ts":"2026-02-14T14:51:34.811Z","category":"auth","event":"umkm-auth-miss","umkm_session":false}
+{"ts":"2026-02-14T14:51:37.337Z","category":"auth","event":"admin-auth-miss","admin_token":false,"admin_session":false}
+{"ts":"2026-02-14T14:51:53.662Z","category":"auth","event":"admin-login-success","email":"admin@mekarsawit","userId":"00000000-0000-0000-0000-000000000001"}
+{"ts":"2026-02-14T15:05:37.128Z","category":"auth","event":"umkm-auth-miss","umkm_session":false}
+{"ts":"2026-02-14T15:05:47.445Z","category":"auth","event":"umkm-login-user-not-found","phone":"+"}
+{"ts":"2026-02-14T15:05:52.371Z","category":"auth","event":"admin-auth-miss","admin_token":false,"admin_session":false}
+{"ts":"2026-02-14T15:05:57.119Z","category":"auth","event":"admin-login-success","email":"admin@mekarsawit","userId":"00000000-0000-0000-0000-000000000001"}

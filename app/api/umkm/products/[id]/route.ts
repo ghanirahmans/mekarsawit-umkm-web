@@ -52,6 +52,8 @@ export async function PUT(
     );
   }
 
+  let cleanupUploadedImageUrl: string | null = null;
+
   try {
     const contentType = req.headers.get("content-type") || "";
     let name: string | undefined;
@@ -62,6 +64,7 @@ export async function PUT(
     let imageUrl: string | undefined;
     let active: boolean | undefined;
     let imageFile: File | null = null;
+    let newUploadedImageUrl: string | null = null;
 
     if (contentType.includes("multipart/form-data")) {
       // FormData request (with possible file upload)
@@ -86,20 +89,22 @@ export async function PUT(
       active = body.active;
     }
 
-    // Handle new file upload
+    // Upload new image first; old image is deleted after DB update succeeds.
     if (imageFile && imageFile.size > 0) {
-      // Delete old image from Supabase if exists
-      if (product.imageUrl) {
-        await deleteFile(product.imageUrl);
-      }
-      imageUrl = await uploadFile(imageFile, "products");
+      newUploadedImageUrl = await uploadFile(imageFile, "products");
+      cleanupUploadedImageUrl = newUploadedImageUrl;
+      imageUrl = newUploadedImageUrl;
+    }
+
+    if (price !== undefined && Number.isNaN(Number(price))) {
+      return NextResponse.json({ error: "Harga tidak valid." }, { status: 400 });
     }
 
     const updated = await prisma.product.update({
       where: { id },
       data: {
         ...(name !== undefined && { name }),
-        ...(price !== undefined && { price: parseInt(price) }),
+        ...(price !== undefined && { price: Number(price) }),
         ...(unit !== undefined && { unit }),
         ...(stockStatus !== undefined && {
           stockStatus: stockStatus as "ready" | "preorder",
@@ -110,8 +115,17 @@ export async function PUT(
       },
     });
 
+    if (newUploadedImageUrl && product.imageUrl) {
+      await deleteFile(product.imageUrl);
+      cleanupUploadedImageUrl = null;
+    }
+
     return NextResponse.json({ ok: true, product: updated });
   } catch (error) {
+    // Cleanup freshly uploaded image when subsequent steps fail.
+    if (cleanupUploadedImageUrl) {
+      await deleteFile(cleanupUploadedImageUrl);
+    }
     console.error("Error updating product:", error);
     return NextResponse.json(
       { error: "Gagal mengupdate produk." },

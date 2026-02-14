@@ -5,8 +5,15 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Modal from "@/app/components/modal";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function ProductList({ products }: { products: any[] }) {
+type ProductItem = {
+  id: string;
+  name: string;
+  price: number;
+  imageUrl?: string | null;
+  active: boolean;
+};
+
+export default function ProductList({ products }: { products: ProductItem[] }) {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
@@ -51,7 +58,7 @@ export default function ProductList({ products }: { products: any[] }) {
       if (!res.ok) throw new Error("Gagal menghapus");
       router.refresh();
       // Optional: Show success modal
-    } catch (e) {
+    } catch {
       showModal("Gagal", <p>Gagal menghapus produk.</p>);
     }
   };
@@ -87,8 +94,8 @@ export default function ProductList({ products }: { products: any[] }) {
             className="rounded-2xl bg-white p-4 shadow-sm border border-slate-100 group hover:border-emerald-200 transition"
           >
             <div className="aspect-square rounded-xl bg-slate-100 mb-4 overflow-hidden relative">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               {product.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={product.imageUrl}
                   alt={product.name}

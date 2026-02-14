@@ -16,6 +16,7 @@ export default function UmkmNavbar() {
   const navItems = [
     { label: "Overview", href: "/umkm/dashboard", icon: "bi-grid-fill" },
     { label: "Produk Saya", href: "/umkm/products", icon: "bi-box-seam-fill" },
+    { label: "Profil", href: "/umkm/profile", icon: "bi-person-circle" },
   ];
 
   return (
@@ -70,17 +71,6 @@ export default function UmkmNavbar() {
             );
           })}
 
-          <div className="h-6 w-px bg-slate-200 mx-2"></div>
-
-          <form action="/api/umkm/logout" method="post">
-            <button
-              type="submit"
-              className="flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-4 py-2 text-sm font-bold text-red-600 transition hover:bg-red-100 hover:border-red-200"
-            >
-              <i className="bi bi-box-arrow-right"></i>
-              <span>Keluar</span>
-            </button>
-          </form>
         </div>
 
         {/* Mobile Menu Button */}
@@ -119,16 +109,6 @@ export default function UmkmNavbar() {
                 </Link>
               );
             })}
-            <div className="my-2 h-px bg-slate-100"></div>
-            <form action="/api/umkm/logout" method="post">
-              <button
-                type="submit"
-                className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition-all"
-              >
-                <i className="bi bi-box-arrow-right text-lg"></i>
-                Keluar
-              </button>
-            </form>
           </div>
         </div>
       )}

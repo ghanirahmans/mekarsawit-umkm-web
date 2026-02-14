@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 
 import PublicNavbar from "@/app/components/public-navbar";
 import Modal from "@/app/components/modal";
@@ -31,7 +30,6 @@ const steps = [
 type State = "idle" | "loading" | "success" | "error";
 
 export default function DaftarUmkmScreen() {
-  const router = useRouter();
   const [step, setStep] = useState(1);
   const [status, setStatus] = useState<State>("idle");
   const [message, setMessage] = useState<string>("");

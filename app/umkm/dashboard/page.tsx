@@ -7,6 +7,7 @@ import ProductList from "./product-list";
 import BusinessForm from "./business-form";
 import RefreshButton from "@/app/components/refresh-button";
 import UmkmNavbar from "../umkm-navbar";
+import BackButton from "@/app/components/back-button";
 
 export const metadata: Metadata = {
   title: "Dashboard UMKM",
@@ -27,6 +28,9 @@ export default async function UmkmDashboard() {
       <UmkmNavbar />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
+        <div className="mb-6">
+          <BackButton href="/" />
+        </div>
         {!business ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="mb-6 h-24 w-24 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
