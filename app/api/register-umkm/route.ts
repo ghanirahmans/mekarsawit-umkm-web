@@ -2,6 +2,7 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { normalizePhoneNumber } from "@/lib/wa";
 
 function slugify(text: string) {
   return text
@@ -15,14 +16,17 @@ export async function POST(req: Request) {
     const body = await req.json();
     const {
       villageCode,
-      phone,
+      phone: rawPhone,
       businessName,
       category,
       address,
-      whatsapp,
+      whatsapp: rawWhatsapp,
       description,
       password,
     } = body || {};
+
+    const phone = normalizePhoneNumber(rawPhone || "");
+    const whatsapp = normalizePhoneNumber(rawWhatsapp || "");
 
     if (
       !villageCode ||
@@ -106,11 +110,22 @@ export async function POST(req: Request) {
       return { user, business };
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       ok: true,
       businessId: result.business.id,
       message: "Pendaftaran diterima. Menunggu verifikasi admin desa.",
     });
+
+    // Auto-login: Set Session Cookie
+    response.cookies.set("umkm_session", result.user.id, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production" && !!process.env.VERCEL,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    return response;
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json({ error: err.message }, { status: 400 });

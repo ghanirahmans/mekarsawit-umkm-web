@@ -22,13 +22,16 @@ export default async function AdminDashboard() {
     activeBusinesses,
     pendingProducts,
     activeProducts,
+    totalViewsResult,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.business.count({ where: { verified: false } }),
     prisma.business.count({ where: { verified: true } }),
     prisma.product.count({ where: { verified: false } }),
     prisma.product.count({ where: { verified: true } }),
+    prisma.business.aggregate({ _sum: { viewCount: true } }),
   ]);
+  const totalViews = totalViewsResult._sum.viewCount ?? 0;
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
@@ -130,6 +133,15 @@ export default async function AdminDashboard() {
             <p className="text-3xl font-bold text-slate-900">
               {activeBusinesses}
             </p>
+          </div>
+          <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-100">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-sm font-bold text-slate-500">
+                Total Dilihat
+              </span>
+              <i className="bi bi-eye text-xl text-cyan-500"></i>
+            </div>
+            <p className="text-3xl font-bold text-slate-900">{totalViews}</p>
           </div>
           <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-100">
             <div className="mb-2 flex items-center justify-between">

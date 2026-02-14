@@ -11,6 +11,7 @@ import UmkmNavbar from "../umkm-navbar";
 export const metadata: Metadata = {
   title: "Dashboard UMKM",
 };
+export const dynamic = "force-dynamic";
 
 export default async function UmkmDashboard() {
   const user = await getSessionUmkm();
@@ -109,8 +110,12 @@ export default async function UmkmDashboard() {
                   </span>
                   <i className="bi bi-eye text-xl text-blue-500"></i>
                 </div>
-                <p className="text-3xl font-bold text-slate-900">-</p>
-                <p className="text-xs text-slate-400 mt-1">Belum tersedia</p>
+                <p className="text-3xl font-bold text-slate-900">
+                  {business.viewCount}
+                </p>
+                <p className="text-xs text-slate-400 mt-1">
+                  Kali dilihat publik
+                </p>
               </div>
             </div>
 

@@ -1,11 +1,3 @@
-export type WaMessageInput = {
-  phone: string; // in international format without +
-  productName?: string;
-  businessName?: string;
-  quantity?: number;
-  notes?: string;
-};
-
 export function normalizePhoneNumber(phone: string): string {
   // 1. Remove non-numeric characters
   let clean = phone.replace(/\D/g, "");
@@ -24,22 +16,31 @@ export function normalizePhoneNumber(phone: string): string {
   return "+" + clean;
 }
 
+export type WaMessageInput = {
+  phone: string; // in international format without +
+  productName?: string;
+  businessName?: string;
+  quantity?: number; // kept for backward compat but ignored
+  notes?: string;
+};
+
 export function buildWaLink({
   phone,
   productName,
   businessName,
-  quantity = 1,
-  notes,
 }: WaMessageInput) {
-  const messageParts = [
-    "Halo admin UMKM Mekar Sawit!",
-    productName ? `Saya mau pesan ${productName}` : undefined,
-    businessName ? `dari ${businessName}` : undefined,
-    quantity ? `qty ${quantity}` : undefined,
-    notes,
+  const lines = [
+    `Halo Kak! 👋`,
+    productName
+      ? `Saya tertarik dengan produk *${productName}*${businessName ? ` dari *${businessName}*` : ""}.`
+      : businessName
+        ? `Saya tertarik dengan produk dari *${businessName}*.`
+        : undefined,
+    `Apakah masih tersedia? Mohon info lebih lanjut ya.`,
+    `Terima kasih! 🙏`,
   ].filter(Boolean);
 
-  const text = encodeURIComponent(messageParts.join(" \n"));
+  const text = encodeURIComponent(lines.join("\n"));
   // wa.me links should normally be numeric-only, so we strip the + from normalization result
   const normalized = normalizePhoneNumber(phone);
   const sanitizedPhone = normalized.replace("+", "");

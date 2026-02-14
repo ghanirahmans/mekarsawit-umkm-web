@@ -53,6 +53,7 @@ model Business {
   verified      Boolean   @default(false)
   active        Boolean   @default(true)
   coverImageUrl String?
+  viewCount     Int       @default(0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   products      Product[]

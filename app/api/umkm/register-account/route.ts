@@ -141,7 +141,7 @@ export async function POST(req: Request) {
     if (newUser) {
       response.cookies.set("umkm_session", newUser.id, {
         httpOnly: true,
-        secure: !!process.env.VERCEL,
+        secure: process.env.NODE_ENV === "production" && !!process.env.VERCEL,
         sameSite: "lax",
         path: "/",
         maxAge: 60 * 60 * 24 * 7, // 7 days

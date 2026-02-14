@@ -135,7 +135,7 @@ export default function DaftarUmkmScreen() {
 
       // Redirect after 2 seconds
       setTimeout(() => {
-        router.push("/umkm/dashboard");
+        window.location.href = "/umkm/dashboard";
       }, 2000);
     } catch (err) {
       setStatus("error");

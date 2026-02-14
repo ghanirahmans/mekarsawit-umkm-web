@@ -10,6 +10,7 @@ import RefreshButton from "@/app/components/refresh-button";
 export const metadata: Metadata = {
   title: "Produk Saya",
 };
+export const dynamic = "force-dynamic";
 
 export default async function UmkmProductListPage() {
   const user = await getSessionUmkm();
