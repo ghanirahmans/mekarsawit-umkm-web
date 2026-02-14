@@ -32,7 +32,9 @@ function VillageCodesContent() {
   const fetchCodes = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/village-codes?q=${query}`);
+      const res = await fetch(`/api/admin/village-codes?q=${query}`, {
+        credentials: "include",
+      });
       if (res.status === 401) {
         router.push("/admin/login");
         return;
@@ -57,6 +59,7 @@ function VillageCodesContent() {
       const res = await fetch("/api/admin/village-codes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ code: newCode }),
       });
 
@@ -94,6 +97,7 @@ function VillageCodesContent() {
       const res = await fetch(`/api/admin/village-codes/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ isActive: !currentStatus }),
       });
 
@@ -111,6 +115,7 @@ function VillageCodesContent() {
     try {
       const res = await fetch(`/api/admin/village-codes/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
 
       if (res.ok) {

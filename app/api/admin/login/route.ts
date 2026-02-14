@@ -25,9 +25,10 @@ export async function POST(req: Request) {
   const res = NextResponse.json({ ok: true });
   res.cookies.set("admin_session", user.id, {
     httpOnly: true,
+    secure: !!process.env.VERCEL,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 6,
+    maxAge: 60 * 60 * 24 * 7, // 7 days
   });
   return res;
 }

@@ -5,6 +5,7 @@ export async function GET(req: Request) {
   const res = NextResponse.redirect(url);
   res.cookies.set("admin_session", "", {
     httpOnly: true,
+    secure: !!process.env.VERCEL,
     sameSite: "lax",
     path: "/",
     maxAge: 0,

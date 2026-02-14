@@ -2,14 +2,11 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionAdmin } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
     const admin = await getSessionAdmin();
-    console.log(
-      "[village-codes GET] admin session result:",
-      admin?.id ?? "null",
-      admin?.role ?? "no role",
-    );
     if (!admin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

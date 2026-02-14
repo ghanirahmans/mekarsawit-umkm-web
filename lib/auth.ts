@@ -14,19 +14,9 @@ export async function getSessionUmkm() {
 export async function getSessionAdmin() {
   const cookieStore = await cookies();
   const session = cookieStore.get("admin_session")?.value;
-  console.log(
-    "[getSessionAdmin] cookie admin_session:",
-    session ?? "NOT FOUND",
-  );
   if (!session) return null;
 
   const user = await prisma.user.findUnique({ where: { id: session } });
-  console.log(
-    "[getSessionAdmin] user found:",
-    user?.id ?? "null",
-    "role:",
-    user?.role ?? "none",
-  );
   if (user?.role !== "super_admin") return null;
 
   return user;
