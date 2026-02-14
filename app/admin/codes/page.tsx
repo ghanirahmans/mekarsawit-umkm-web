@@ -33,6 +33,10 @@ function VillageCodesContent() {
     setLoading(true);
     try {
       const res = await fetch(`/api/admin/village-codes?q=${query}`);
+      if (res.status === 401) {
+        router.push("/admin/login");
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
         setCodes(data);
@@ -55,6 +59,12 @@ function VillageCodesContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: newCode }),
       });
+
+      if (res.status === 401) {
+        alert("Sesi admin telah habis. Silakan login ulang.");
+        router.push("/admin/login");
+        return;
+      }
 
       if (res.ok) {
         setNewCode("");

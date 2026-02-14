@@ -39,8 +39,34 @@ async function main() {
   const validTo = new Date();
   validTo.setFullYear(validFrom.getFullYear() + 1);
 
-  // Only create dev village code in development
-  if (process.env.NODE_ENV !== "production") {
+  // Ensure at least one active village code exists
+  if (process.env.NODE_ENV === "production") {
+    // In production: auto-generate a code if none active
+    const activeCount = await prisma.villageCode.count({
+      where: { isActive: true },
+    });
+    if (activeCount === 0) {
+      const autoCode = Math.random()
+        .toString(36)
+        .substring(2, 12)
+        .toUpperCase();
+      await prisma.villageCode.create({
+        data: {
+          code: autoCode,
+          validFrom,
+          validTo,
+          isActive: true,
+          createdBy: "System (Auto-Seed)",
+        },
+      });
+      console.log("Production: Auto-generated village code:", autoCode);
+    } else {
+      console.log(
+        "Production: Active codes already exist, skipping auto-generation.",
+      );
+    }
+  } else {
+    // In development: use the well-known dev code
     await prisma.villageCode.upsert({
       where: { code: DEV_VILLAGE_CODE },
       update: { isActive: true, validFrom, validTo },
