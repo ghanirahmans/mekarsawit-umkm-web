@@ -9,6 +9,7 @@ import RefreshButton from "@/app/components/refresh-button";
 export const metadata: Metadata = {
   title: "Dashboard Admin",
 };
+export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
   const admin = await getSessionAdmin();

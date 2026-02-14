@@ -1,17 +1,22 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { ADMIN_COOKIE_LEGACY_NAME, ADMIN_COOKIE_NAME } from "@/lib/auth";
+import { logAuth } from "@/lib/logger";
 
 export async function POST(req: Request) {
   const { email, password } = await req.json();
-  if (!email || !password)
+  if (!email || !password) {
+    logAuth({ event: "admin-login-missing-field" });
     return NextResponse.json(
       { error: "Isi email dan password." },
       { status: 400 },
     );
+  }
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user || user.role !== "super_admin" || !user.passwordHash) {
+    logAuth({ event: "admin-login-forbidden", email });
     return NextResponse.json(
       { error: "Tidak punya akses admin." },
       { status: 403 },
@@ -19,16 +24,24 @@ export async function POST(req: Request) {
   }
 
   const ok = await bcrypt.compare(password, user.passwordHash);
-  if (!ok)
+  if (!ok) {
+    logAuth({ event: "admin-login-wrong-password", email });
     return NextResponse.json({ error: "Password salah." }, { status: 403 });
+  }
 
   const res = NextResponse.json({ ok: true });
-  res.cookies.set("admin_session", user.id, {
+  const cookieOptions = {
     httpOnly: true,
-    secure: !!process.env.VERCEL,
+    secure: process.env.NODE_ENV === "production" && !!process.env.VERCEL,
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7, // 7 days
-  });
+  } as const;
+
+  res.cookies.set(ADMIN_COOKIE_NAME, user.id, cookieOptions);
+  // Keep legacy cookie temporarily so older routes/clients stay compatible.
+  res.cookies.set(ADMIN_COOKIE_LEGACY_NAME, user.id, cookieOptions);
+  logAuth({ event: "admin-login-success", email, userId: user.id });
+
   return res;
 }

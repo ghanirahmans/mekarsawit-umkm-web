@@ -10,14 +10,9 @@ export const metadata: Metadata = {
   title: "Kelola Pengguna",
 };
 
-async function getSessionUser() {
-  const cookieStore = await cookies();
-  const session = cookieStore.get("admin_session")?.value;
-  if (!session) return null;
-  const user = await prisma.user.findUnique({ where: { id: session } });
-  if (user?.role !== "super_admin") return null;
-  return user;
-}
+import { getSessionAdmin } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 
 import SearchInput from "@/app/components/search-input";
 
@@ -26,7 +21,7 @@ export default async function UsersPage({
 }: {
   searchParams: Promise<{ q?: string }>;
 }) {
-  const user = await getSessionUser();
+  const user = await getSessionAdmin();
   if (!user) redirect("/admin/login");
 
   const { q } = await searchParams;

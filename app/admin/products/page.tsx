@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   title: "Verifikasi Produk",
 };
 
+export const dynamic = "force-dynamic";
+
 import SearchInput from "@/app/components/search-input";
 
 export default async function AdminProductsPage({

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 
 export default function AdminNavbar() {
   const pathname = usePathname();
@@ -10,7 +10,7 @@ export default function AdminNavbar() {
 
   // Close menu when route changes
   useEffect(() => {
-    setIsOpen(false);
+    startTransition(() => setIsOpen(false));
   }, [pathname]);
 
   const navItems = [
@@ -76,6 +76,7 @@ export default function AdminNavbar() {
           <div className="h-6 w-px bg-slate-200 mx-2"></div>
 
           <Link
+            prefetch={false}
             href="/api/admin/logout"
             className="flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-4 py-2 text-sm font-bold text-red-600 transition hover:bg-red-100 hover:border-red-200"
           >
@@ -118,6 +119,7 @@ export default function AdminNavbar() {
               );
             })}
             <Link
+              prefetch={false}
               href="/api/admin/logout"
               className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition-all"
             >

@@ -11,14 +11,9 @@ export const metadata: Metadata = {
   title: "Verifikasi UMKM",
 };
 
-async function getSessionUser() {
-  const cookieStore = await cookies();
-  const session = cookieStore.get("admin_session")?.value;
-  if (!session) return null;
-  const user = await prisma.user.findUnique({ where: { id: session } });
-  if (user?.role !== "super_admin") return null;
-  return user;
-}
+import { getSessionAdmin } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 
 import SearchInput from "@/app/components/search-input";
 import CategoryFilter from "@/app/components/category-filter";
@@ -28,7 +23,7 @@ export default async function PendingPage({
 }: {
   searchParams: Promise<{ q?: string; category?: string }>;
 }) {
-  const user = await getSessionUser();
+  const user = await getSessionAdmin();
   if (!user) redirect("/admin/login");
 
   const { q, category } = await searchParams;

@@ -1,83 +1,68 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionAdmin } from "@/lib/auth";
-
-export const dynamic = "force-dynamic";
+import { logAuth } from "@/lib/logger";
 
 export async function GET(req: Request) {
-  try {
-    const admin = await getSessionAdmin();
-    if (!admin) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { searchParams } = new URL(req.url);
-    const q = searchParams.get("q") || "";
-
-    const codes = await prisma.villageCode.findMany({
-      where: {
-        code: {
-          contains: q,
-          mode: "insensitive",
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
+  const admin = await getSessionAdmin();
+  if (!admin) {
+    logAuth({
+      event: "village-codes-unauthorized",
+      cookieHeaderPresent: !!req.headers.get("cookie"),
     });
-
-    return NextResponse.json(codes);
-  } catch (error) {
-    console.error("Error fetching village codes:", error);
-    return NextResponse.json(
-      { error: "Gagal memuat kode desa" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const { searchParams } = new URL(req.url);
+  const query = searchParams.get("q") ?? "";
+
+  const codes = await prisma.villageCode.findMany({
+    where: {
+      code: {
+        contains: query,
+        mode: "insensitive",
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const serialized = codes.map((code) => ({
+    ...code,
+    createdAt: code.createdAt.toISOString(),
+    createdBy: code.createdBy || "Admin",
+  }));
+
+  return NextResponse.json(serialized);
 }
 
 export async function POST(req: Request) {
-  try {
-    const admin = await getSessionAdmin();
-    if (!admin) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { code, validFrom, validTo } = await req.json();
-
-    if (!code) {
-      return NextResponse.json(
-        { error: "Kode desa wajib diisi" },
-        { status: 400 },
-      );
-    }
-
-    const existing = await prisma.villageCode.findUnique({
-      where: { code },
+  const admin = await getSessionAdmin();
+  if (!admin) {
+    logAuth({
+      event: "village-codes-create-unauthorized",
+      cookieHeaderPresent: !!req.headers.get("cookie"),
     });
-
-    if (existing) {
-      return NextResponse.json(
-        { error: "Kode desa sudah ada" },
-        { status: 400 },
-      );
-    }
-
-    const newCode = await prisma.villageCode.create({
-      data: {
-        code,
-        validFrom: validFrom ? new Date(validFrom) : new Date(),
-        validTo: validTo ? new Date(validTo) : null,
-        createdBy: admin.name || "Admin",
-      },
-    });
-
-    return NextResponse.json(newCode);
-  } catch (error) {
-    console.error("Error creating village code:", error);
-    return NextResponse.json(
-      { error: "Gagal membuat kode desa" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const body = await req.json().catch(() => ({}));
+  const code = (body?.code as string | undefined)?.trim().toUpperCase();
+  if (!code) {
+    return NextResponse.json({ error: "Kode wajib diisi" }, { status: 400 });
+  }
+
+  const existing = await prisma.villageCode.findUnique({ where: { code } });
+  if (existing) {
+    return NextResponse.json({ error: "Kode sudah ada" }, { status: 400 });
+  }
+
+  await prisma.villageCode.create({
+    data: {
+      code,
+      validFrom: new Date(),
+      createdBy: admin.name || "Admin",
+    },
+  });
+
+  return NextResponse.json({ ok: true });
 }
