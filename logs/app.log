@@ -41,3 +41,4 @@
 {"ts":"2026-02-14T07:50:20.625Z","category":"auth","event":"admin-auth-ok","session":"00000000-0000-0000-0000-000000000001"}
 {"ts":"2026-02-14T07:50:21.737Z","category":"auth","event":"admin-auth-ok","session":"00000000-0000-0000-0000-000000000001"}
 {"ts":"2026-02-14T07:50:28.025Z","category":"auth","event":"admin-auth-ok","session":"00000000-0000-0000-0000-000000000001"}
+{"ts":"2026-02-14T14:12:53.684Z","category":"auth","event":"umkm-auth-ok","session":"f70cb8b1-1ba5-43b8-aca8-6579c43e82f6"}

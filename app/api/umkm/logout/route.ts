@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
+function clearUmkmSession(req: Request) {
   const url = new URL("/", req.url);
   const res = NextResponse.redirect(url);
   // Clear the umkm_session cookie
@@ -12,4 +12,12 @@ export async function GET(req: Request) {
     maxAge: 0,
   });
   return res;
+}
+
+export async function GET(req: Request) {
+  return clearUmkmSession(req);
+}
+
+export async function POST(req: Request) {
+  return clearUmkmSession(req);
 }

@@ -8,10 +8,25 @@ export const ADMIN_COOKIE_LEGACY_NAME = "admin_session";
 export async function getSessionUmkm() {
   const cookieStore = await cookies();
   const session = cookieStore.get("umkm_session")?.value;
-  if (!session) return null;
+  if (!session) {
+    logAuth({ event: "umkm-auth-miss", umkm_session: false });
+    return null;
+  }
+
   const user = await prisma.user.findUnique({ where: { id: session } });
-  // Ensure strict role check if needed, but 'admin_umkm' is the role
-  if (user?.role !== "admin_umkm") return null;
+
+  if (!user) {
+    logAuth({ event: "umkm-auth-user-not-found", session });
+    return null;
+  }
+
+  if (user.role !== "admin_umkm") {
+    logAuth({ event: "umkm-auth-role-mismatch", session, role: user.role });
+    return null;
+  }
+
+  logAuth({ event: "umkm-auth-ok", session });
+
   return user;
 }
 

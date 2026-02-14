@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 
 export default function UmkmNavbar() {
   const pathname = usePathname();
@@ -10,7 +10,7 @@ export default function UmkmNavbar() {
 
   // Close menu when route changes
   useEffect(() => {
-    setIsOpen(false);
+    startTransition(() => setIsOpen(false));
   }, [pathname]);
 
   const navItems = [
@@ -72,13 +72,15 @@ export default function UmkmNavbar() {
 
           <div className="h-6 w-px bg-slate-200 mx-2"></div>
 
-          <Link
-            href="/api/umkm/logout"
-            className="flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-4 py-2 text-sm font-bold text-red-600 transition hover:bg-red-100 hover:border-red-200"
-          >
-            <i className="bi bi-box-arrow-right"></i>
-            <span>Keluar</span>
-          </Link>
+          <form action="/api/umkm/logout" method="post">
+            <button
+              type="submit"
+              className="flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-4 py-2 text-sm font-bold text-red-600 transition hover:bg-red-100 hover:border-red-200"
+            >
+              <i className="bi bi-box-arrow-right"></i>
+              <span>Keluar</span>
+            </button>
+          </form>
         </div>
 
         {/* Mobile Menu Button */}
@@ -118,13 +120,15 @@ export default function UmkmNavbar() {
               );
             })}
             <div className="my-2 h-px bg-slate-100"></div>
-            <Link
-              href="/api/umkm/logout"
-              className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition-all"
-            >
-              <i className="bi bi-box-arrow-right text-lg"></i>
-              Keluar
-            </Link>
+            <form action="/api/umkm/logout" method="post">
+              <button
+                type="submit"
+                className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition-all"
+              >
+                <i className="bi bi-box-arrow-right text-lg"></i>
+                Keluar
+              </button>
+            </form>
           </div>
         </div>
       )}
