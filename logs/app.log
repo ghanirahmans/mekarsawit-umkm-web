@@ -51,3 +51,7 @@
 {"ts":"2026-02-14T15:05:47.445Z","category":"auth","event":"umkm-login-user-not-found","phone":"+"}
 {"ts":"2026-02-14T15:05:52.371Z","category":"auth","event":"admin-auth-miss","admin_token":false,"admin_session":false}
 {"ts":"2026-02-14T15:05:57.119Z","category":"auth","event":"admin-login-success","email":"admin@mekarsawit","userId":"00000000-0000-0000-0000-000000000001"}
+{"ts":"2026-02-14T15:35:25.235Z","category":"product","event":"create-success","productId":"13f46467-3a25-4b7d-9f79-7a7ad48a0a28","businessId":"3022fcfc-18e2-4623-9e30-9ecefdb22c85","userId":"f70cb8b1-1ba5-43b8-aca8-6579c43e82f6"}
+{"ts":"2026-02-14T15:36:00.938Z","category":"auth","event":"umkm-auth-miss","umkm_session":false}
+{"ts":"2026-02-14T15:36:11.647Z","category":"auth","event":"admin-auth-miss","admin_token":false,"admin_session":false}
+{"ts":"2026-02-14T15:36:25.277Z","category":"auth","event":"admin-login-success","email":"admin@mekarsawit","userId":"00000000-0000-0000-0000-000000000001"}

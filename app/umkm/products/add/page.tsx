@@ -66,16 +66,36 @@ export default function AddProductPage() {
 
       const res = await fetch("/api/umkm/products", {
         method: "POST",
+        credentials: "include",
+        cache: "no-store",
         body: formData, // Auto-sets Content-Type to multipart/form-data
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal menambah produk.");
+      let data: { error?: string } | null = null;
+      try {
+        data = (await res.json()) as { error?: string };
+      } catch {
+        data = null;
+      }
+
+      if (res.status === 401) {
+        router.push("/umkm/login");
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Gagal menambah produk.");
+      }
 
       router.push("/umkm/dashboard");
       router.refresh();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Gagal menambah produk.";
+      const message =
+        err instanceof TypeError
+          ? "Tidak bisa terhubung ke server. Coba refresh halaman lalu ulangi."
+          : err instanceof Error
+            ? err.message
+            : "Gagal menambah produk.";
       setError(message);
     } finally {
       setLoading(false);
