@@ -1,10 +1,15 @@
-﻿import AdminNavbar from "../admin-navbar";
+﻿import type { Metadata } from "next";
+import AdminNavbar from "../admin-navbar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { buildWaLink } from "@/lib/wa";
 import RefreshButton from "@/app/components/refresh-button";
+
+export const metadata: Metadata = {
+  title: "Verifikasi UMKM",
+};
 
 async function getSessionUser() {
   const cookieStore = await cookies();

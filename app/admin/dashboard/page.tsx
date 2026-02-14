@@ -1,9 +1,14 @@
+import type { Metadata } from "next";
 import AdminNavbar from "../admin-navbar";
 import { getSessionAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import RefreshButton from "@/app/components/refresh-button";
+
+export const metadata: Metadata = {
+  title: "Dashboard Admin",
+};
 
 export default async function AdminDashboard() {
   const admin = await getSessionAdmin();

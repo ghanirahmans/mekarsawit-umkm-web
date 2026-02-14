@@ -1,9 +1,14 @@
+import type { Metadata } from "next";
 import AdminNavbar from "../admin-navbar";
 import { prisma } from "@/lib/prisma";
 import { getSessionAdmin } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import AdminProductList from "./product-list";
 import RefreshButton from "@/app/components/refresh-button";
+
+export const metadata: Metadata = {
+  title: "Verifikasi Produk",
+};
 
 import SearchInput from "@/app/components/search-input";
 

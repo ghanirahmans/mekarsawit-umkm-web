@@ -39,17 +39,20 @@ async function main() {
   const validTo = new Date();
   validTo.setFullYear(validFrom.getFullYear() + 1);
 
-  await prisma.villageCode.upsert({
-    where: { code: DEV_VILLAGE_CODE },
-    update: { isActive: true, validFrom, validTo },
-    create: {
-      id: crypto.randomUUID(),
-      code: DEV_VILLAGE_CODE,
-      validFrom,
-      validTo,
-      isActive: true,
-    },
-  });
+  // Only create dev village code in development
+  if (process.env.NODE_ENV !== "production") {
+    await prisma.villageCode.upsert({
+      where: { code: DEV_VILLAGE_CODE },
+      update: { isActive: true, validFrom, validTo },
+      create: {
+        id: crypto.randomUUID(),
+        code: DEV_VILLAGE_CODE,
+        validFrom,
+        validTo,
+        isActive: true,
+      },
+    });
+  }
 
   const users = [
     {

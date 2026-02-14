@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import UmkmNavbar from "../umkm-navbar";
 import { getSessionUmkm } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -5,6 +6,10 @@ import { prisma } from "@/lib/prisma";
 import ProductList from "../dashboard/product-list";
 import Link from "next/link";
 import RefreshButton from "@/app/components/refresh-button";
+
+export const metadata: Metadata = {
+  title: "Produk Saya",
+};
 
 export default async function UmkmProductListPage() {
   const user = await getSessionUmkm();

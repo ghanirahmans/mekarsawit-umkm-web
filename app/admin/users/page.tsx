@@ -1,9 +1,14 @@
+import type { Metadata } from "next";
 import AdminNavbar from "../admin-navbar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import UserList from "./user-list";
 import RefreshButton from "@/app/components/refresh-button";
+
+export const metadata: Metadata = {
+  title: "Kelola Pengguna",
+};
 
 async function getSessionUser() {
   const cookieStore = await cookies();

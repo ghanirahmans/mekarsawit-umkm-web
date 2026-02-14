@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { writeFile } from "fs/promises";
-import path from "path";
+import { uploadFile } from "@/lib/storage";
 
 function slugify(text: string) {
   return text
@@ -46,7 +45,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1. Validate Village Code
+    // 1. Validate Village Code from database (admin-created codes only)
     const code = await prisma.villageCode.findFirst({
       where: { code: villageCode, isActive: true },
     });
@@ -68,17 +67,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // 3. Handle Image Upload
+    // 3. Handle Image Upload (Supabase Storage)
     let coverImageUrl = null;
     if (imageFile && imageFile.size > 0) {
-      const buffer = Buffer.from(await imageFile.arrayBuffer());
-      const filename = `biz-${Date.now()}-${imageFile.name.replace(/\s/g, "-")}`;
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-
-      // Ensure directory exists? (Assuming it does based on previous code)
-      const filePath = path.join(uploadDir, filename);
-      await writeFile(filePath, buffer);
-      coverImageUrl = `/uploads/${filename}`;
+      coverImageUrl = await uploadFile(imageFile, "business");
     }
 
     // 4. Create User & Business in Transaction
@@ -86,16 +78,14 @@ export async function POST(req: Request) {
     const slugBase = slugify(businessName);
     const slug = `${slugBase}-${Date.now().toString(36)}`;
 
-    // Using transaction to ensure atomic creation
     const newUser = await prisma.$transaction(async (tx) => {
-      // 1. Invalidate the used Village Code
+      // 1. Invalidate the used Village Code (OTP-style)
       await tx.villageCode.update({
         where: { id: code.id },
         data: { isActive: false },
       });
 
-      // 2. Auto-generate New Village Code
-      // Format: 10 random alphanumeric characters
+      // 2. Auto-generate New Village Code (OTP replacement)
       const newCodeString = Math.random()
         .toString(36)
         .substring(2, 12)
@@ -114,7 +104,7 @@ export async function POST(req: Request) {
         data: {
           name,
           phone,
-          villageCode, // Keep record of which code was used
+          villageCode,
           passwordHash,
           role: "admin_umkm",
         },
@@ -132,7 +122,7 @@ export async function POST(req: Request) {
           description,
           coverImageUrl,
           verified: false,
-          active: false, // Wait for approval
+          active: false,
         },
       });
 
