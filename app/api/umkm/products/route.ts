@@ -39,12 +39,19 @@ export async function POST(req: Request) {
     const price = typeof priceRaw === "string" ? priceRaw.trim() : "";
     const unit = typeof unitRaw === "string" ? unitRaw.trim() : "";
     const stockStatus =
-      stockStatusRaw === "preorder" ? "preorder" : ("ready" as const);
+      typeof stockStatusRaw === "string" ? stockStatusRaw.trim() : "";
     const description = typeof descriptionRaw === "string" ? descriptionRaw : "";
 
-    if (!name || !price || !unit) {
+    if (!name || !price || !unit || !stockStatus) {
       return NextResponse.json(
-        { error: "Nama, Harga, dan Satuan wajib diisi." },
+        { error: "Nama, Harga, Satuan, dan Status Stok wajib diisi." },
+        { status: 400 },
+      );
+    }
+
+    if (stockStatus !== "ready" && stockStatus !== "preorder") {
+      return NextResponse.json(
+        { error: "Status stok tidak valid." },
         { status: 400 },
       );
     }
@@ -55,17 +62,28 @@ export async function POST(req: Request) {
     }
 
     let imageUrl: string | null = null;
-    if (imageEntry instanceof File && imageEntry.size > 0) {
-      const maxSize = 2 * 1024 * 1024;
-      if (imageEntry.size > maxSize) {
-        return NextResponse.json(
-          { error: "Ukuran gambar maksimal 2MB." },
-          { status: 400 },
-        );
-      }
-
-      imageUrl = await uploadFile(imageEntry, "products");
+    if (!(imageEntry instanceof File) || imageEntry.size === 0) {
+      return NextResponse.json(
+        { error: "Foto produk wajib diisi." },
+        { status: 400 },
+      );
     }
+
+    const maxSize = 2 * 1024 * 1024;
+    if (imageEntry.size > maxSize) {
+      return NextResponse.json(
+        { error: "Ukuran gambar maksimal 2MB." },
+        { status: 400 },
+      );
+    }
+
+    if (!imageEntry.type.startsWith("image/")) {
+      return NextResponse.json(
+        { error: "File harus berupa gambar." },
+        { status: 400 },
+      );
+    }
+    imageUrl = await uploadFile(imageEntry, "products");
 
     const slug = `${slugify(name)}-${Date.now().toString(36)}`;
 
@@ -76,7 +94,7 @@ export async function POST(req: Request) {
         slug,
         price: priceInt,
         unit,
-        stockStatus,
+        stockStatus: stockStatus as "ready" | "preorder",
         description,
         imageUrl,
         active: true,

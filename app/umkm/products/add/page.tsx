@@ -39,6 +39,9 @@ export default function AddProductPage() {
       if (file.size > 2 * 1024 * 1024) {
         // 2MB limit
         setError("Ukuran gambar maksimal 2MB");
+        setImageFile(null);
+        setPreviewUrl("");
+        e.target.value = "";
         return;
       }
       setImageFile(file);
@@ -53,6 +56,10 @@ export default function AddProductPage() {
     setError("");
 
     try {
+      if (!imageFile) {
+        throw new Error("Foto produk wajib diisi.");
+      }
+
       const formData = new FormData();
       formData.append("name", name);
       formData.append("price", price);
@@ -141,6 +148,7 @@ export default function AddProductPage() {
                 <input
                   type="file"
                   accept="image/*"
+                  required
                   onChange={handleImageChange}
                   className="absolute inset-0 z-10 w-full h-full opacity-0 cursor-pointer"
                 />
@@ -207,6 +215,7 @@ export default function AddProductPage() {
                 </label>
                 <div className="relative">
                   <select
+                    required
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
                     className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
@@ -237,6 +246,7 @@ export default function AddProductPage() {
               </label>
               <div className="relative">
                 <select
+                  required
                   value={stockStatus}
                   onChange={(e) => setStockStatus(e.target.value)}
                   className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
