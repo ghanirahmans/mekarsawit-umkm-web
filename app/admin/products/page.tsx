@@ -55,11 +55,11 @@ export default async function AdminProductsPage({
               Daftar produk baru yang perlu disetujui sebelum tayang.
             </p>
           </div>
-          <RefreshButton />
         </div>
 
-        <div className="mb-6">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
           <SearchInput placeholder="Cari produk atau nama UMKM..." />
+          <RefreshButton />
         </div>
 
         <AdminProductList initialProducts={pendingProducts} />

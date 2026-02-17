@@ -63,11 +63,11 @@ export default async function UsersPage({
               Daftar semua pengguna terdaftar di sistem.
             </p>
           </div>
-          <RefreshButton />
         </div>
 
-        <div className="mb-6">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
           <SearchInput placeholder="Cari user (No HP, Email, atau Nama Usaha)..." />
+          <RefreshButton />
         </div>
 
         <UserList users={users} />

@@ -58,12 +58,12 @@ export default async function PendingPage({
               {pending.length} menunggu verifikasi).
             </p>
           </div>
-          <RefreshButton />
         </div>
 
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
           <SearchInput placeholder="Cari UMKM, Owner..." />
           <CategoryFilter />
+          <RefreshButton />
         </div>
 
         {pending.length === 0 ? (

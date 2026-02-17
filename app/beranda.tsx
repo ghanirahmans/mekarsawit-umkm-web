@@ -162,7 +162,7 @@ export default async function HomeScreen() {
                 Tanya Dulu
               </Link>
               <Link
-                href="https://wa.me/6281111111111"
+                href="https://wa.me/6285186836565"
                 target="_blank"
                 className="rounded-full bg-green-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-green-600/30 transition hover:bg-green-700 active:scale-95 flex items-center gap-2"
               >

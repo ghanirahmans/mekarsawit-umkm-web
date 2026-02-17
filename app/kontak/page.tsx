@@ -16,7 +16,7 @@ export default function ContactPage() {
         </p>
 
         <Link
-          href="https://wa.me/6281111111111"
+          href="https://wa.me/6285186836565"
           className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-700 active:scale-95"
         >
           <i className="bi bi-whatsapp"></i>

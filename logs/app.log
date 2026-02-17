@@ -55,3 +55,7 @@
 {"ts":"2026-02-14T15:36:00.938Z","category":"auth","event":"umkm-auth-miss","umkm_session":false}
 {"ts":"2026-02-14T15:36:11.647Z","category":"auth","event":"admin-auth-miss","admin_token":false,"admin_session":false}
 {"ts":"2026-02-14T15:36:25.277Z","category":"auth","event":"admin-login-success","email":"admin@mekarsawit","userId":"00000000-0000-0000-0000-000000000001"}
+{"ts":"2026-02-14T16:00:04.086Z","category":"product","event":"create-success","productId":"1c1ab4fc-e532-4a22-99d7-7a108bac1950","businessId":"3022fcfc-18e2-4623-9e30-9ecefdb22c85","userId":"f70cb8b1-1ba5-43b8-aca8-6579c43e82f6"}
+{"ts":"2026-02-15T04:53:43.102Z","category":"auth","event":"umkm-auth-miss","umkm_session":false}
+{"ts":"2026-02-15T04:53:44.799Z","category":"auth","event":"admin-auth-miss","admin_token":false,"admin_session":false}
+{"ts":"2026-02-15T04:53:55.498Z","category":"auth","event":"admin-login-success","email":"admin@mekarsawit","userId":"00000000-0000-0000-0000-000000000001"}

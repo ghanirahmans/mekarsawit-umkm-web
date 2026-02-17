@@ -17,10 +17,10 @@ export default function RefreshButton() {
     <button
       onClick={handleRefresh}
       disabled={isRefreshing}
-      className="flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-100 disabled:opacity-70"
+      className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
     >
       <i
-        className={`bi bi-arrow-clockwise text-sm ${isRefreshing ? "animate-spin" : ""}`}
+        className={`bi bi-arrow-clockwise text-base ${isRefreshing ? "animate-spin" : ""}`}
       ></i>
       Refresh
     </button>

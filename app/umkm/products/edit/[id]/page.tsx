@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import UmkmNavbar from "../../../umkm-navbar";
+import { compressImageIfNeeded, MAX_IMAGE_BYTES } from "@/lib/image-compression";
 
 type FormState = {
   name: string;
@@ -34,7 +35,9 @@ export default function EditProductPage({
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [compressingImage, setCompressingImage] = useState(false);
   const [error, setError] = useState("");
+  const [imageNotice, setImageNotice] = useState("");
   const [form, setForm] = useState<FormState>({
     name: "",
     price: "",
@@ -80,14 +83,38 @@ export default function EditProductPage({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      setError("Ukuran gambar maksimal 2MB");
-      return;
-    }
 
-    setImageFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
-    setError("");
+    void (async () => {
+      try {
+        if (!file.type.startsWith("image/")) {
+          throw new Error("File harus berupa gambar.");
+        }
+
+        setCompressingImage(true);
+        const { file: processedFile, compressed } = await compressImageIfNeeded(file);
+        if (processedFile.size > MAX_IMAGE_BYTES) {
+          throw new Error("Gambar terlalu besar dan tidak bisa dikompres <= 2MB.");
+        }
+
+        setImageFile(processedFile);
+        setPreviewUrl(URL.createObjectURL(processedFile));
+        setImageNotice(
+          compressed
+            ? "Gambar otomatis dikompres agar ukuran <= 2MB."
+            : "Gambar siap diupload.",
+        );
+        setError("");
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error ? err.message : "Gagal memproses gambar.";
+        setImageFile(null);
+        setImageNotice("");
+        setError(message);
+        e.target.value = "";
+      } finally {
+        setCompressingImage(false);
+      }
+    })();
   };
 
   async function handleSubmit(e: React.FormEvent) {
@@ -164,6 +191,7 @@ export default function EditProductPage({
                 <input
                   type="file"
                   accept="image/*"
+                  disabled={compressingImage}
                   onChange={handleImageChange}
                   className="absolute inset-0 z-10 w-full h-full opacity-0 cursor-pointer"
                 />
@@ -190,6 +218,11 @@ export default function EditProductPage({
                   </div>
                 )}
               </div>
+              {(compressingImage || imageNotice) && (
+                <p className="mt-2 text-xs font-semibold text-slate-500">
+                  {compressingImage ? "Mengompres gambar..." : imageNotice}
+                </p>
+              )}
             </div>
 
             <div>
