@@ -78,7 +78,7 @@ export default async function PendingPage({
           </div>
         ) : (
           <div className="grid gap-4">
-            {pending.map((biz) => (
+            {pending.map((biz: any) => (
               <div
                 key={biz.id}
                 className="rounded-3xl border border-emerald-100 bg-white p-5 shadow-sm"

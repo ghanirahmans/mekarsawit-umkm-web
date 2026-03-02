@@ -26,7 +26,7 @@ export async function GET(req: Request) {
     orderBy: { createdAt: "desc" },
   });
 
-  const serialized = codes.map((code) => ({
+  const serialized = codes.map((code: any) => ({
     ...code,
     createdAt: code.createdAt.toISOString(),
     createdBy: code.createdBy || "Admin",
